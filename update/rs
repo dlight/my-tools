@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# rs rs rs
+
+exec_or_debug=$(test "$1" == "-d" && echo echo)
+do="$exec_or_debug sudo"
+
+to() {
+	f=$1; shift
+	$do bash -c "echo $@ > $f"
+}
+
+addkey() {
+	$do apt-key adv --keyserver keyserver.ubuntu.com \
+		--recv-keys $1
+}
+
+apt() {
+	$do apt-get update
+	$do apt-get $@
+	$do rm /var/cache/apt/archives/*.deb
+}
+
+# --
+
+mkdir -p ~/etc ~/bin
+
+$do ntpdate ntp.cais.rnp.br
+
+to /etc/apt/sources.list.d/rs.list \
+	deb http://ppa.launchpad.net/chromium-daily/ppa/ubuntu karmic main
+
+to ~/etc/apt-get \
+	git autoconf \
+	manpages-posix-dev \
+	vim \
+	ucspi-tcp \
+	chromium-browser flashplugin-installer \
+	mplayer \
+	xchat pidgin
+
+addkey 4E5E17B5
+
+apt -y install $(< ~/etc/apt-get)
