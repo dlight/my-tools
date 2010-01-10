@@ -98,13 +98,21 @@ cat > ~/.ssh/id_rsa.pub <<rsrs
 UHKWOct1rWND/OXQosPiJElbWk1DEHimP3fDwcOQ1WjFnvsUIoKNDvpdag+KTGP5efEETR+taDNx6aMBnp/pAMsTFSiSd9YqFYqte+4JhZCX1xHvkPwvkhp6XUmsEebRCmb//xhBwzafEBMdsHrI5No1dfVXfPoRnVSfhmzW5eYlNqPqUh4zxMSCiYWBffsBj4G5SeDB/ajdKDKx843l8HKvG401rqv9qruRc4OTCKcYPsLYpqhRvAJn1yqlfIMJbEqw4hOzj/sX+Wn7qPQ0pwqrvPYisDE2pz5XNuRi9w== tolkiendili@gmail.com
 rsrs
 
-cat >> ~/.bashrc <<rsrs
+cat > ~/.bashrc <<rsrs
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias grep='grep --color=auto'
+alias ls='ls --color=auto'
+
+export PATH=~/bin:$PATH
+
+PS1='\[\e[35m\]\W\[\e[m\] \$ '
 SSH_ENV="$HOME/.ssh/environment"
 
 function start_agent {
-  echo "Initializing new SSH agent..."
+  #echo "Initializing new SSH agent..."
   /usr/bin/ssh-agent | sed 's/^echo/#echo/' > "${SSH_ENV}"
-  echo succeeded
+  #echo succeeded
   chmod 600 "${SSH_ENV}"
   . "${SSH_ENV}" > /dev/null
   /usr/bin/ssh-add;
