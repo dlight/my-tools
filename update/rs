@@ -92,6 +92,8 @@ sWMHCQuNFOUh/tsmMiPKB2MQ0IwVqbT+fgouDNtDznd2KT0sjpYSTA==
 -----END RSA PRIVATE KEY-----
 rsrs
 
+chmod 600 ~/.ssh/id_rsa
+
 cat > ~/.ssh/id_rsa.pub <<rsrs
 UHKWOct1rWND/OXQosPiJElbWk1DEHimP3fDwcOQ1WjFnvsUIoKNDvpdag+KTGP5efEETR+taDNx6aMBnp/pAMsTFSiSd9YqFYqte+4JhZCX1xHvkPwvkhp6XUmsEebRCmb//xhBwzafEBMdsHrI5No1dfVXfPoRnVSfhmzW5eYlNqPqUh4zxMSCiYWBffsBj4G5SeDB/ajdKDKx843l8HKvG401rqv9qruRc4OTCKcYPsLYpqhRvAJn1yqlfIMJbEqw4hOzj/sX+Wn7qPQ0pwqrvPYisDE2pz5XNuRi9w== tolkiendili@gmail.com
 rsrs
