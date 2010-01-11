@@ -1,0 +1,314 @@
+.\" t
+.\"$Id: encapsulate.html,v 1.4 1998/10/28 16:07:57 thoth Exp $ 
+.\"Copyright 1997-98 by Robert Forsman
+.\"
+.TH ENCAPSULATE 1 "June 19, 1997"
+
+.SH  NAME
+encapsulate \- multiplex several channels over a single socket with
+sampling of remote process exit status, and provide conversation
+termination without closing the socket.
+
+netpipes 4.2
+
+.SH  SYNOPSIS
+\fBencapsulate\fP
+\fB\-\-fd\fP \fIn\fP 
+[ \fB\-\-verbose\fP ]
+[ \fB\-\-subproc\fP 
+[ \fB\-\-infd\fP \fIn\fP[\fB=\fP\fIsid\fP] ]
+[ \fB\-\-outfd\fP \fIn\fP[\fB=\fP\fIsid\fP] ]
+[ \fB\-\-duplex\fP \fIn\fP[\fB=\fP\fIsid\fP] ]
+[ \fB\-\-Duplex\fP \fIn\fP[\fB=\fP\fIsid\fP] ]
+[ \fB\-\-DUPLEX\fP \fIn\fP[\fB=\fP\fIsid\fP] ]
+[ \fB\-\-prefer\-local\fP ]
+[ \fB\-\-prefer\-remote\fP ]
+[ \fB\-\-local\-only\fP ]
+[ \fB\-\-remote\-only\fP ]
+]
+[ \fB\-\-client\fP ]
+[ \fB\-\-server\fP ]
+\fB\-\fP[\fB#\fP\fIn\fP][\fBv\fP][\fBs\fP[\fBi\fP\fIn\fP][\fBo\fP\fIn\fP][\fBd\fP\fIn\fP][\fBio\fP\fIn\fP][\fBoi\fP\fIn\fP][\fBl\fP][\fBr\fP][\fBL\fP][\fBR\fP]]
+\fIcommand args ...\fP
+
+.SH  DESCRIPTION
+
+\fBencapsulate \fP
+implements the Session Control Protocol (SCP) in a limited manner.
+\fBencapsulate\fP
+multiplexes several virtual channels over a single socket using SCP.
+\fBencapsulate\fP
+transmits the exit status of the local program to the remote end over
+a reserved SCP channel and receives the remote exit status back.
+\fBencapsulate\fP
+provides conversation boundaries without closing the socket.
+
+Flags may appear in any order.  The first argument that isn't a flag
+is the command to spawn (assuming \fB\-\-subproc\fP is specified, an
+error otherwise).
+
+.SH  OPTIONS
+
+\fB\-\-fd\fP \fIn\fP, \fB\-#\fP\fIn\fP : specify the file descriptor
+of the socket we will be multiplexing subprocess channels over.  This
+argument is required
+
+\fB\-\-verbose\fP, \fB\-v\fP : Print extra information (including a
+copyright notice) to stderr.
+
+\fB\-\-subproc\fP, \fB\-s\fP : spawn a subprocess.  You must supply a
+\fIcommand\fP and \fIargs\fP.  If you omit this flag, then you must
+\fBnot\fP supply a \fIcommand\fP and \fIargs\fP.  If you omit this
+flag, \fBencapsulate\fP will copy input from stdin to an outgoing
+channel in the SCP-muxed socket and copy to stdout from an incoming
+channel in the SCP-muxed socket.  If you omit this flag, all of the
+input and output channel flags are illegal.
+
+\fB\-\-infd\fP \fIn\fP, \fB\-i\fP\fIn\fP : specify an input
+channel.  If there is a subprocess, it will be able to read from
+descriptor \fIn\fP.  If there is no subprocess \fBencapsulate\fP
+will read from its descriptor \fIn\fP (these are opposite polarities
+for the SCP channel).
+
+\fB\-\-outfd\fP \fIn\fP, \fB\-o\fP\fIn\fP : specify an output
+channel.  If there is a subprocess, it will be able to write to
+descriptor \fIn\fP.  If there is no subprocess \fBencapsulate\fP
+will write to its descriptor \fIn\fP (these are opposite polarities
+for the SCP channel).
+
+\fB\-\-duplex\fP \fIn\fP, \fB\-io\fP\fIn\fP : specify a bidirectional
+channel.  The remote \fBencapsulate\fP will send the SCP SYN packet,
+and the local will respond with a SYN for the same session.  The
+subprocess will be able to read and write to file descriptor \fIn\fP.
+The subprocess should use the \fBsockdown\fP(1) program if it must
+close one direction while leaving the other direction open.
+
+\fB\-\-Duplex\fP \fIn\fP, \fB\-d\fP\fIn\fP : specify a bidirectional
+channel.  The \fB\-\-client\fP end of the \fBencapsulate\fP connection
+sends the SCP SYN packet and \fB\-\-server\fP responds with a SYN for
+the same session.  The subprocess will be able to read and write to
+file descriptor \fIn\fP.  The subprocess should use the
+\fBsockdown\fP(1) program if it must close one direction while leaving
+the other direction open.
+
+\fB\-\-DUPLEX\fP \fIn\fP, \fB\-oi\fP\fIn\fP : specify a bidirectional
+channel.  The local \fBencapsulate\fP will send the SCP SYN packet,
+and the remote will respond with a SYN for the same session.  The
+subprocess will be able to read and write to file descriptor \fIn\fP.
+The subprocess should use the \fBsockdown\fP(1) program if it must
+close one direction while leaving the other direction open.
+
+All of the long forms of the bidirectional channel have an
+optional \fB=\fP\fIsid\fP component that can be used to specify the
+SCP Session ID.  This is not very useful when connecting encapsulate
+to another instance of itself, but could be handy when connecting to
+another piece of software that implements SCP.
+
+\fB\-\-prefer\-local\fP, \fB\-l\fP : if both the remote and local
+subprocesses exit with non-zero (erroneous) codes, \fBencapsulate\fP
+will exit with the same code as the local subprocess.  \fBThis is the
+default.\fP
+
+\fB\-\-prefer\-remote\fP, \fB\-r\fP : if both the remote and local
+subprocesses exit with non-zero (erroneous) codes, \fBencapsulate\fP
+will exit with the same code as the remote subprocess.
+
+\fB\-\-local\-only\fP, \fB\-L\fP : \fBencapsulate\fP exits with the
+local status and ignores the remote status.
+
+\fB\-\-remote\-only\fP, \fB\-R\fP : \fBencapsulate\fP exits with the
+remote status and ignores the local status.
+
+.SH  SESSION IDs AND SUBPROCESS CHANNELS
+
+When specifying channels for the subprocess, the order of the flags is
+very important.  Every flag to the local \fBencapsulate\fP must have a
+corresponding flag on the remote \fBencapsulate\fP that is in the
+exact same position (in the list of channels).  The descriptor numbers
+need not correspond, but the position and type of each channel must.
+
+A lamentably complicating factor is that the data flow implied by
+\fB\-\-infd\fP and \fB\-\-outfd\fP are different when you specify a
+subprocess.
+
+.TS H
+lw(2i) lw(2i)
+lw(2i) lw(2i).
+.TB
+Local	Remote
+\fB\-\-infd\fP w/subproc	\fB\-\-outfd\fP w/subproc
+\fB\-\-infd\fP w/subproc	\fB\-\-infd\fP
+\fB\-\-infd\fP	\fB\-\-infd\fP w/subproc
+\fB\-\-infd\fP	\fB\-\-outfd\fP
+\fB\-\-outfd\fP w/subproc	\fB\-\-infd\fP w/subproc
+\fB\-\-outfd\fP w/subproc	\fB\-\-outfd\fP
+\fB\-\-outfd\fP	\fB\-\-outfd\fP w/subproc
+\fB\-\-outfd\fP	\fB\-\-infd\fP
+\fB\-\-duplex\fP	\fB\-\-DUPLEX\fP
+\fB\-\-Duplex\fP	\fB\-\-Duplex\fP
+\fB\-\-DUPLEX\fP	\fB\-\-duplex\fP
+.TE
+
+RIGHT:
+
+.nf 
+l$ encapsulate \-\-infd 0 \-\-duplex 5
+r$ encapsulate \-\-outfd 1 \-\-DUPLEX 5
+.fi
+
+WRONG:
+
+.nf 
+l$ encapsulate \-\-infd 0 \-\-duplex 5
+r$ encapsulate \-\-outfd 1 \-\-duplex 5
+.fi
+
+\fB\-\-duplex\fP must have a corresponding \fB\-\-DUPLEX\fP on the
+remote end.
+
+.nf 
+l$ encapsulate \-\-infd 0 \-\-duplex 5
+r$ encapsulate \-\-DUPLEX 5 \-\-outfd 1
+.fi
+
+\fB\-\-infd\fP must have a corresponding \fB\-\-outfd\fP on the remote
+end.  It's out of order and the channels will be allocated incorrectly
+leading to protocol errors.
+
+If you understand the source code for \fBencapsulate\fP, you can
+violate these guidelines, but it is unnecessary, error-prone, and
+ill-advised; besides, you don't really understand the source code.
+Don't do it.
+
+.SH  CLIENT \-VS\- SERVER
+
+The SCP has an implicit polarity.  One end is the server and the
+other end is the client.  You can specify which end is which using
+\fB\-\-client\fP and \fB\-\-server\fP.  If you do not specify one, then
+\fBencapsulate\fP will compare the addresses of both ends of the
+socket (specified with \fB\-\-fd\fP) and use a deterministic algorithm
+to pick one to be the server and one to be the client.  If the remote
+address of the socket does not correspond to the remote
+\fBencapsulate\fP (e.g. the packets are being forwarded through a
+plugged gateway, the addresses are being masqueraded, or are otherwise
+percieved inconsistently by the two ends) then this algorithm has a
+good chance of "failing" and assigning both to be server or both to be
+client.
+
+The only time you should ever let \fBencapsulate\fP choose between
+client and server is in interactive situations.  It is very likely
+that a software system built around \fBencapsulate\fP will be reused
+in a situation where the automatic polarity assignment fails.
+
+.SH  EXAMPLES
+
+Here's a simple file transfer daemon:
+
+.nf 
+server$ faucet 3001 \-\-once \-\-fd3 \\
+     sh \-c 'while ~/src/netpipes4.0/encapsulate \-\-fd 3 \-so5i4 \\
+                sh \-c "fname=`cat 0<&4`; echo \\$fname; cat < \\$fname 1>&5"; \\
+                do true; done'
+client$ hose server 3001 \-\-retry 10 \-\-delay 1 \-\-fd3 \\
+        sh \-c 'while read fname; do \\
+                ~/src/netpipes4.0/encapsulate \-\-fd 3 \-si4o5 \\
+                        sh \-c "echo $fname 1>&5; exec 5>&\-; cat 0<&4" \\
+                || break; done'
+.fi
+
+Just type the name of the file you want to retrieve into the hose
+and press return.  It will be dumped to stdout.  Repeat until
+enlightened or bored.
+
+.SH  TROUBLESHOOTING
+
+Did you specify \fB\-\-client\fP and \fB\-\-server\fP properly?  One
+side should be server, the other side should be client.  If you
+specify them both as server or both as client, you have made a
+mistake.  Do not rely on the automatic polarity detection.  While it
+is theoretically a very good algorithm, it is fooled very easily.
+
+Do all of your channel assignments (\fB\-\-infd\fP et al) match up?
+If you get these wrong, \fBencapsulate\fP will freak out and drip
+spooge all over your shoes.
+
+For deadlock avoidance, make sure you are closing channels when you
+don't need them anymore.  Use the >&\- redirection operator in sh or
+bash.  Make sure you close it in all of the background processes as
+well.
+
+Unable to read stdin from a process that has been backgrounded
+with &\ ?  Bash closes file descriptor 0 for any subprocess
+that is backgrounded (e.g. (command&) ).  You can get around
+this by copying 0 onto another descriptor, and then copying it back
+within the backgrounded process.
+
+.nf 
+( ( cat 0<&3 ) & ) 3<&0
+.fi
+
+.SH SEE ALSO
+netpipes (1),
+http://sunsite.unc.edu/ses/scp.html
+
+The Session Control Protocol document on SunSite was a draft.
+There is a more recent one that doesn't specify header compression
+(which I don't use anyway).  It may eventually become an RFC.  Then
+again, encapsulate may be the only program which ever implements SCP.
+
+.SH  BUGS
+
+\fBencapsulate\fP is not hard to deadlock.  Until I add unbounded
+buffering inside encapsulate, avoid constructing deadlock\-vulnerable
+systems.
+
+The \fBencapsulate\fP included with netpipes 4.0 totally failed
+to handle the case where no subprocess was specified.  No error
+message would be issued, and the program would do absolutely nothing.
+The 4.1 version should work.
+
+\fBencapsulate\fP has no other known bugs.  I'm sure there are
+unknown ones because this software is not yet mature; in fact, it's
+totally wet behind the ears.  Break it and send me the pieces.
+
+Well, the command\-line argument style is inconsistent with faucet &
+hose.  I'll be updating faucet & hose.
+
+The Linux kernel from the beginning of time up through version
+2.0.29 has a problem with sockets being shut down "too fast".  This
+results in loss of data at the end of a stream and an "Error:
+connection reset by peer" during reads.  2.0.30 supposedly fixes this.
+This state machine flaw is very likely present in many other OSes,
+because the strange conditions that exercise it are almost nonexistent
+in normal applications, but happen all the time in some applications
+of the NetPipes package.  \fBencapsulate\fP can be used to work
+around this bug in some cases because encapsulate does not perform a
+shutdown on the network socket ever (it doesn't even do a "close").
+
+.SH CREDITS
+
+Hi Mom!  Hi Dad!
+
+.SH COPYRIGHT
+Copyright (C) 1997\-98 Robert Forsman
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+.SH AUTHOR
+Robert Forsman
+ thoth@purplefrog.com
+ Purple Frog Software
+ http://web.purplefrog.com/~thoth/
+ 

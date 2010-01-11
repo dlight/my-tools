@@ -1,0 +1,298 @@
+.\" t
+.\"$Id: ssl-auth.html,v 1.7 1998/10/28 16:07:57 thoth Exp $
+.\"Copyright 1992-98 by Robert Forsman
+.\"
+.TH  SSL-AUTH 1 "October 28, 1998" 
+
+.SH NAME
+
+ssl\-auth \- secure sockets for the peasants
+
+netpipes 4.2
+
+.SH SYNOPSIS
+
+\fBssl\-auth\fP \fB\-\-fd\fP \fIn\fP ( \fB\-\-server\fP | \fB\-\-client\fP )
+[ \fB\-\-cert\fP \fIfile\fP ]
+[ \fB\-\-key\fP \fIfile\fP ]
+[ \fB\-\-verbose\fP ]
+[ \fB\-\-verify\fP \fIn\fP ]
+[ \fB\-\-CApath\fP \fIpath/\fP ]
+[ \fB\-\-CAfile\fP \fIfile\fP ]
+[ \fB\-\-cipher\fP \fIcipher\-list\fP ]
+[ \fB\-\-criteria\fP \fIcriteria\-expr\fP ]
+[ \fB\-\-subproc\fP [ \fB\-\-infd\fP \fIn\fP ] [ \fB\-\-outfd\fP \fIn\fP ] ]
+[ \fB\-\fP[\fB#\fP\fIn\fP][\fBv\fP][\fBs\fP[\fBi\fP\fIn\fP][\fBo\fP\fIn\fP]] ]
+
+.SH DESCRIPTION
+
+\fBssl\-auth\fP provides SSL capability for simple programs and shell
+scripts.  With \fBssl\-auth\fP you can secure and authenticate your
+netpipes scripts, provide secure proxies for mundane internet services
+such as IMAP, and communicate with such servers.
+
+.SH  OPTIONS
+
+You must specify a file descriptor (using \fB\-\-fd\fP) over which to
+conduct the SSL conversation.  This must be a socket (readable and
+writable), not just a pipe.  Also, you must define the polarity of the
+conversation with \fB\-\-server\fP or \fB\-\-client\fP.
+
+Servers must specify a \fB\-\-key\fP and a \fB\-\-cert\fP.  Failure to
+do so generally results in a ``no shared ciphers'' error on the server
+and a ``handshake failure'' on the client.
+
+\fB\-\-verbose\fP currently just prints a copyright notice.
+
+\fB\-\-verify\fP \fIn\fP specifies a verify depth.  Errors deeper
+than \fIn\fP will be ignored.  Issuer errors
+(UNABLE_TO_GET_ISSUER_CERT, and UNABLE_TO_GET_ISSUER_CERT_LOCALLY) are
+treated as a depth one greater than that reported by the SSL library
+because, while they are reported as a problem with the signed
+certificate, in a common case it is better to treat them as a problem
+with the signer (issuer) certificate.  The typical value for \fIn\fP
+is 1.
+(behavior with the presence of \-\-criteria in the absence of \-\-verify
+is currently ill\-defined and uninvestigated).
+
+\fB\-\-CApath\fP allows you to specify the location of your
+Certificate Authority directory.  This directory contains the (usually
+self-signed) certificates from certificate authorities and the hash
+links.  Here's a BASH function to create a hash link for a certificate
+in the current directory:
+
+.nf 
+function make\-ssl\-cert\-link {
+    hash=`x509 \-noout \-hash < $1`
+    ln \-s $1 $hash.0
+}
+.fi
+
+\fB\-\-cipher\fP lets you specify a cipher list to be passed to
+SSL_CTX_set_cipher_list().  It is a colon\-separated list of names.
+Each name has an optional prefix of \fB\-\fP, \fB+\fP, or \fB!\fP.
+\fB\-\fP and \fB!\fP remove the cipher from the list supported by the
+library.  \fB+\fP adds the cipher to the front, and no prefix adds it
+to the front unless it is already listed.
+
+\fB\-\-criteria\fP is the most powerful feature of \fBssl\-auth\fP.
+You can use it to specify a set of criteria to apply to the
+certificate chain presented by the SSL peer.  The grammar of the
+\fIcriteria\-expression\fP is documented in the CRITERIA LANGUAGE section
+below.
+
+\fB\-\-subproc\fP allows you to specify a process that will supply
+the payload for the SSL conversation.  Without \fB\-\-subproc\fP
+\fBssl\-auth\fP merely encrypts stdin to the socket and decrypts from
+the socket to stdout.  When \fB\-\-subproc\fP is specified
+\fBssl\-auth\fP spawns a child, attaches pipes to the specified
+\fB\-\-infd\fP and/or \fB\-\-outfd\fP (if both descriptor numbers are
+the same, it attaches a socket instead of a pipe), and routes those
+data streams through the SSL socket.
+
+\fBssl\-auth\fP also accepts one-character compact flags.  These
+flags may be compacted together in one argument, or spread throughout
+several.  You may use any mixture of long and compact flags, as long
+as you don't mix them in the same argument.  The compact flags that
+expect arguments expect them to immediately follow their activating
+character.
+
+\fB\-#\fP corresponds to \fB\-\-fd\fP.
+\fB\-v\fP corresponds to \fB\-\-verbose\fP.
+\fB\-s\fP corresponds to \fB\-\-subproc\fP.
+\fB\-i\fP corresponds to \fB\-\-infd\fP.
+\fB\-o\fP corresponds to \fB\-\-outfd\fP.
+
+.SH CRITERIA LANGUAGE
+\fIcriteria\-expr\fP : \fIprefix\-unary\-expr\fP
+ \fIor\-list\fP : \fIand\-list\fP \fB\-\-or\fP \fIor\-list\fP
+ \fIor\-list\fP : \fIand\-list\fP \fB\-o\fP \fIor\-list\fP
+ \fIor\-list\fP : \fIand\-list\fP
+ \fIand\-list\fP : \fIprefix\-unary\-expr\fP \fB\-\-and\fP \fIand\-list\fP
+ \fIand\-list\fP : \fIprefix\-unary\-expr\fP \fB\-a\fP \fIand\-list\fP
+ \fIand\-list\fP : \fIprefix\-unary\-expr\fP
+ \fIprefix\-unary\-expr\fP : \fB\-\-not\fP \fIterm\fP
+ \fIprefix\-unary\-expr\fP : \fB!\fP \fIterm\fP
+ \fIprefix\-unary\-expr\fP : \fB\-\-depth\fP \fIinteger\fP \fIterm\fP
+ \fIprefix\-unary\-expr\fP : \fB\-d\fP \fIinteger\fP \fIterm\fP
+ \fIprefix\-unary\-expr\fP : \fIterm\fP
+ \fIterm\fP : \fB(\fP \fIor\-list\fP \fB)\fP
+ \fIterm\fP : \fB\-\-common\-name\fP \fIstring\fP
+ \fIterm\fP : \fB\-\-country\-name\fP \fIstring\fP
+ \fIterm\fP : \fB\-\-state\-name\fP \fIstring\fP
+ \fIterm\fP : \fB\-\-province\-name\fP \fIstring\fP
+ \fIterm\fP : \fB\-\-locality\-name\fP \fIstring\fP
+ \fIterm\fP : \fB\-\-organization\-name\fP \fIstring\fP
+ \fIterm\fP : \fB\-\-organizational\-unit\-name\fP \fIstring\fP
+ \fIterm\fP : \fB\-\-department\-name\fP \fIstring\fP
+ \fIterm\fP : \fB\-\-public\-key\-match\-cert\fP \fIfname\fP
+ \fIterm\fP : \fB\-\-cert\-md5\-digest\fP \fI32hexdigits\fP
+\fIterm\fP : \fB\-\-write\-pem\-cert\fP \fIfname\fP
+ 
+
+The grammar parsed by the \fB\-\-criteria\fP flag will be
+unsurprising to the average computer-literate person.  At the
+lowest precedence level is the or list whose members are separated by
+\fB\-o\fP or \fB\-\-or\fP.  The next highest precedence level is the
+and list whose members are separated by \fB\-a\fP or \fB\-\-and\fP.
+The next level of precedence is the prefix unary operators which
+include \fB\-\-not\fP (can be shortened to \fB!\fP, but be sure to
+escape it if your shell treats it specially;  most do) and
+\fB\-\-depth\fP \fIn\fP (which can be shortened to \fB\-d\fP
+\fIn\fP).  The highest precedence are the primitives (listed below).
+Precedence may be overridden using parenthesis, but remember to escape
+them with a \\ because ()s are usually treated specially by the shell.
+
+The following lists the correspondence between the X509 field names
+and the primitives that are designed to compare them.
+
+.TS H
+lw(0.4i) lw(1.2i)
+lw(0.4i) lw(1.2i).
+.TB
+X509	criteria primitive
+CN	\-\-common\-name
+C	\-\-country\-name
+ST	\-\-state\-name, \-\-province\-name
+L	\-\-locality\-name
+O	\-\-organization\-name
+OU	\-\-organizational\-unit\-name, \-\-department\-name
+.TE
+
+\fB\-\-public\-key\-match\-cert\fP compares the public key (exponent and
+modulus) from the SSL peer with the public key in the PEM\-encoded
+certificate in \fIfname\fP.  This can be used to verify the identity
+of the remote end in the absence of a certificate authority.
+
+\fB\-\-cert\-md5\-digest\fP compares the MD5 fingerprint of the SSL
+peer's certificate with the 32\-digit hex string argument.  It
+incorporates much more than the public key such as the name, issuer,
+algorithm, and signature.  You can compute the md5 fingerprint by
+running the following command upon the server's certificate.
+
+.nf 
+server$ ssleay x509 \-md5 \-fingerprint \-in <i>certificate.pem</i> \-out /dev/null
+MD5 Fingerprint=F6:0A:A2:D1:A3:12:5A:41:49:C7:56:0B:4E:67:1D:3C
+.fi
+
+In this case you would use a criteria of \-\-cert\-md5\-digest
+F60AA2D1A3125A4149C7560B4E671D3C.
+
+\fB\-\-write\-pem\-cert\fP writes the certificate of the SSL peer to
+\fIfname\fP in PEM format.
+
+.SH  EXAMPLES
+
+Here is an example ssl\-imapd spawnable from inetd:
+
+.nf 
+#!/bin/sh
+
+exec > /dev/null
+exec 2>&1
+
+exec /usr/local/bin/ssl\-auth \-\-fd 0 \-\-server \\
+        \-\-cert /usr/local/ssl/certs/imapd.cert \\
+        \-\-key  /usr/local/ssl/private/imapd.key \\
+        \-\-CApath /usr/local/ssl/certs/ \\
+        \-si0o1 /usr/local/sbin/imapd
+.fi
+
+To use it, put this in your /etc/inetd.conf
+
+.nf 
+993     stream  tcp     nowait  root    /usr/local/sbin/ssl\-imapd
+.fi
+
+If you want to turn a non\-ssl IMAP client into an ssl\-capable IMAP
+client, try putting this in your local machine's inetd.conf:
+
+.nf 
+imap stream tcp nowait root /usr/local/sbin/ssl\-proxy imap.remote.com
+.fi
+
+/usr/local/sbin/ssl\-proxy looks like this:
+
+.nf 
+#!/bin/sh
+
+exec > /dev/null
+exec 2>&1
+
+exec hose "$1" 993 \-\-fd 3 \\
+	ssl\-auth \-\-fd 3 \-\-client \\
+        \-\-CApath /usr/local/ssl/certs/ \-\-verify 1 >&0
+.fi
+
+Now point your IMAP client at your local machine.  The connection
+should be tunnelled through SSL to the remote machine.  Tell me if it
+works...
+
+
+If you can type HTTP requests yourself, you can probe an SSL HTTPd
+with the following command:
+
+.nf 
+$ hose web.purplefrog.com 443 \-\-fd 3 ssl\-auth \-\-fd 3 \-\-client
+.fi
+
+Then type your GET or POST request
+
+
+To get a copy of the remote server's certificate for local
+inspection you can do this:
+
+.nf 
+$ hose web.purplefrog.com 443 \-\-fd 3 ssl\-auth \-\-fd 3 \-\-client \\
+        \-\-CApath /usr/local/ssl/certs/ \\
+	\-\-verify 1 \-\-criteria \-\-write\-pem\-cert tmp.cert \\
+	\-si0o1 /bin/true
+.fi
+
+.SH  SEE ALSO
+netpipes (1),
+faucet (1),
+hose (1),
+encapsulate (1),
+SSLeay library
+
+.SH  BUGS
+
+This program is raw.  Even I don't know how to operate it fully.
+
+.SH  EXPORT LAW
+As of December 1997 it is still illegal to export encryption from
+the United States to the rest of the world (with an exception or two).
+If you break the law, you will probably be repressed.
+
+.SH CREDITS
+Thanks, Eric Young, for writing SSLeay.  Now tell me how to write more
+\fB\-\-criteria\fP primitives and improve the existing ones to work for
+strangely-encoded certificates.
+
+Thanks to Dr. Stephen Henson
+<shenson@drh\-consultancy.demon.co.uk> for numerous hints and
+answers.
+
+.SH COPYRIGHT
+Copyright (C) 1997\-98 Robert Forsman
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+.SH  AUTHOR
+Robert Forsman
+ thoth@purplefrog.com
+ Purple Frog Software
+ http://web.purplefrog.com/~thoth/

@@ -1,0 +1,311 @@
+.\" t
+.\" $Id: hose.html,v 1.4 1998/10/28 16:07:57 thoth Exp $
+.\" Copyright 1992-98 by Robert Forsman
+.TH  HOSE 1 "October 28, 1998"
+
+.SH NAME
+hose \- the client end of a BSD network pipe
+
+netpipes 4.2
+
+.SH SYNOPSIS
+\fBhose\fP \fIhostname\fP \fIport\fP
+(\fB\-\-in\fP|\fB\-\-out\fP|\fB\-\-err\fP|\fB\-\-fd\fP \fIn\fP|\fB\-\-slave\fP|\fB\-\-netslave\fP|\fB\-\-netslave1\fP|\fB\-\-netslave2\fP)
+[\fB\-\-verbose\fP]
+[\fB\-\-unix\fP]
+[\fB\-\-localport\fP \fIport\fP]
+[\fB\-\-localhost\fP \fIaddr\fP]
+[\fB\-\-retry\fP \fIn\fP]
+[\fB\-\-delay\fP \fIn\fP]
+[\fB\-\-shutdown\fP [r|w][a] ]
+[\fB\-\-noreuseaddr\fP]
+[\fB\-\fP[\fBi\fP][\fBo\fP][\fBe\fP][\fB#\fP\fI3\fP[,\fI4\fP[,\fI5\fP...]]][\fBs\fP][\fBv\fP][\fBu\fP]]
+[\fB\-p\fP \fIlocal\-port\fP]
+[\fB\-h\fP \fIlocal\-host\fP]
+\fIcommand\fP \fIargs\fP
+
+.SH DESCRIPTION
+
+\fBhose\fP
+attempts to provide the functionality of pipes over the network.  It
+behaves as the client end of a server\-client connection.  When used
+with
+\fBfaucet(1)\fP
+it can function as a replacement for
+
+.nf 
+tar \-cf \- . | rsh other "cd destdir; tar \-xf \-"
+.fi
+
+\fBfaucet\fP
+and
+\fBhose\fP
+are especially useful when you don't have easy non\-interactive access
+to the destination machine.
+
+.SH OPTIONS
+
+\fBhose\fP
+creates a BSD socket and, if the
+\fB\-\-localport\fP
+option is used, binds it to the port number (or service name)
+specified immediately afterwards.  If
+\fB\-\-localhost\fP
+is also specified then its argument is a local address to bind to. (
+\fB\-\-localhost\fP
+is only useful on machines with multiple IP addresses.)
+
+\fBhose\fP
+then tries to connect to the foreign machine
+\fIhostname\fP
+with foreign port
+\fIport.\fP
+
+If successful
+\fBhose\fP
+redirects the socket to stdin, stdout, stderr, and/or arbitrary file
+descriptors according to the
+\fB\-\-in \-\-out \-\-err \-\-fd \fIn\fP\fP
+flags.  \fBhose\fP also automagically shuts down the unused half of
+the connection if only \fB\-\-in\fP is specified or if only
+\fB\-\-out\fP and/or \fB\-\-err\fP are specified.  See the
+\fB\-\-shutdown\fP option for more information.
+
+\fBhose\fP
+then exec(2)s a \fIcommand\fP with \fIargs\fP.
+
+However, the \fB\-\-slave\fP flag turns \fBhose\fP into a primitive
+sort of telnet.  The \fIcommand\fP is ignored.  Instead, \fBhose\fP
+goes into a loop where it copies bytes from stdin to the socket, and
+bytes from the socket to stdout.  This is actually more useful than
+telnet because telnet tries to perform interpretation on the byte
+stream and generally gets in your way.  \fBhose\fP just passes bytes
+without mucking with them.
+
+The \fB\-\-netslave*\fP options are variants on the \fB\-\-slave\fP
+theme.  Whereas \fB\-\-slave\fP will continue to forward data in one
+direction even after the other has encountered EOF, \fB\-\-netslave\fP
+variants are more aggressive in closing the entire socket.  Before
+closing the socket, it attempts to flush any data already in its own
+buffer.  \fB\-\-slave\fP performs the shutdown(2) system call when it
+encounters EOF on one direction, but the \fB\-\-netslave\fP variants
+don't because some network daemons are confused by it.
+
+\fB\-\-netslave\fP closes down the connection when it encounters
+EOF in either direction.
+
+\fB\-\-netslave1\fP closes down the connection when it encounters
+EOF while reading stdin.  Any data unread on the socket will be
+ignored.  If it merely encounters EOF on the socket, it will continue
+to read from stdin.
+
+\fB\-\-netslave2\fP closes down the connection when it encounters
+EOF while reading from the socket.  Any data unread on stdin will be
+ignored.  If it merely encounters EOF on stdin, it will continue to
+read from the socket.  This mode can be useful with some web servers.
+
+The
+\fB\-\-verbose\fP
+flag specifies that
+\fBhose\fP
+should print information about the host it connects to.  This
+information includes the numeric host address, host names, and foreign
+port numbers.
+
+The
+\fB\-\-unix\fP
+flag specifies that the
+\fIport\fP
+is not an internet port number or service name, but instead it is a
+filename for a UNIX domain socket.  This option may be simulated by
+using 
+\fB\-unix\-\fP
+as the host name to connect to, or by renaming the
+\fBhose\fP
+program to \fBuhose\fP.
+
+\fB\-\-retry\fP
+\fIn\fP
+allows the user to specify that
+\fBhose\fP
+should retry the connect(2) call for
+\fIn\fP
+times (or forever if
+\fIn\fP
+is negative).
+\fB\-\-delay\fP
+\fIn\fP
+specifies how many seconds to delay between tries.
+
+\fB\-\-shutdown\fP
+is used to control two behaviors.  The first set is controlled by the
+`r' and `w' flags.
+If the `r' is present, then \fBhose\fP will close half the
+connection to make it a read\-only socket.  If the child tries to
+write, it will fail.  If the remote connection tries to read, it will
+percieve the socket as closed.
+If instead the `w' is present, then \fBhose\fP will close the other
+half of the connection to make it a write\-only socket.  If the child
+tries to read, it will percieve the socket as closed.  If the remote
+connection tries to write, it will fail.
+The default behavior is to leave both halves open, however the
+shutdown of half of the connection is automagically done by certain
+combinations of the \fB\-\-in\fP, \fB\-\-out\fP, and \fB\-\-err\fP
+flags.  To suppress their automagic behavior you can use
+(respectively) \-\-fd 0, \-\-fd 1, and \-\-fd 2.
+
+The other behavior is controlled by the `a' flag.  If the `a' flag is
+present then \fBhose\fP will fork(2) before execcing the
+\fIcommand\fP
+and when the child exits it will perform a shutdown(2) with how=2.
+This closes both halves of the connection.  This option is not
+necessary for most applications since the closing of the file
+descriptors is detected by the remote process, but some less
+sophisticated network devices (such as printers) require a shutdown(2)
+for proper operation.
+To make things perfectly clear, the list of acceptable arguments to
+the \fB\-\-shutdown\fP option are `r', `w', `ra', `wa', `a'.
+
+By default, \fBhose\fP performs a
+
+.nf  setsockopt(fd, SOL_SOCKET, SO_REUSEADDR...)
+.fi
+
+which prevents the ``Address in use'' problem that ``plagued''
+netpipes versions 4.0 and earlier.  \fB\-\-noreuseaddr\fP tells
+\fBhose\fP to skip that system call, and revert to pre\-4.1 behavior.
+Without this call, the port is not always available for immediate
+reuse after the \fBhose\fP exits.
+
+.SH SHORT FLAGS
+To reduce the typing requirements for arguments (and to pay homage to
+the age\-old tradition of UNIX cryptotaxonomy) I have added some short
+forms of the flags.  Here is a correspondence chart:
+
+.TS H
+|lw(0.4i)|lw(1.2i)|
+|cw(0.4i)|lw(1.2i)|.
+.TB
+Short	Long
+\fBi\fP	\fBin\fP
+\fBo\fP	\fBout\fP
+\fBe\fP	\fBerr\fP
+\fB#\fP\fIn\fP	\fBfd\fP\fIn\fP
+\fBs\fP	\fBslave\fP
+\fBv\fP	\fBverbose\fP
+\fBq\fP	\fBquiet\fP
+\fBu\fP	\fBunix\fP
+\fBp\fP	\fBlocalport\fP
+\fBh\fP	\fBlocalhost\fP
+.TE
+
+See faucet(1) for a more detailed discussion of short flags.  Their
+behavior should be unsurprising.  The flags that require separate
+arguments follow in the tradition of tar(1).
+
+.SH EXAMPLES
+
+This will connect to port 3000 on the machine reef and connect the
+socket to the stdin of a tar command.
+
+.nf 
+example$ hose reef 3000 \-\-in tar \-xf \- .
+.fi
+
+The command actually exec(2)ed by the
+\fBhose\fP
+program is
+
+.nf 
+tar \-xf \- .
+.fi
+
+The
+\fB\-\-in\fP
+option means that the input of the child process will have been
+redirected into the socket connected to reef.
+
+This connects to a UNIX domain socket in the current directory
+
+.nf 
+example$ hose \-\-unix\- u\-socket \-\-in sh \-c \\
+	"unfunky.perl.script | dd of=sample.pgm"
+.fi
+
+The socket provides input to the sh command.
+
+.SH SEE ALSO
+netpipes (1),
+faucet (1),
+sockdown (1),
+getpeername (1),
+socket (2),
+bind (2),
+connect (2),
+shutdown (2),
+services (5),
+gethostbyaddr (3)
+
+.SH NOTES
+
+Doubtless there are bugs in this program, especially in the unix
+domain socket portions.  I welcome problem reports and would like to
+make these programs as "clean" (no leftover files, sockets) as
+possible.
+
+4.0 made the full\-word arguments use \-\- like many GNU programs.
+They are still available with a single \- for backward\-compatibility.
+
+3.1 added the single\-character flags.
+
+Release 2.3 added support for multi\-homed hosts: hosts with multiple
+internet numbers (such as gateways).  Before this faucet assumed that
+the first internet number that gethostbyname returned was the only
+one.
+\fB\-\-foreignport\fP
+authentication was weakened by this inadequacy so I beefed up the
+algorithms.  
+\fB\-\-foreignport\fP
+will accept a connection from any of the
+internet numbers associated with the host name.
+
+.SH CREDITS
+
+Thanks to Steve Clift <clift@ml.csiro.au> for SGI
+(SysV) patches.
+
+Many people complained about the old way of specifying the
+command.  Thanks to whoever gave me the alternative which is now
+implemented.  It is much better.
+
+Thanks to Sten Drescher <smd@hrt213.brooks.af.mil>
+for the \-\-retry and \-\-delay patches and giving me the idea for the
+\-\-shutdown option.  Evidently some printer doesn't appreciate the
+socket being close(2)d.
+
+Randy Fischer <fischer@ucet.ufl.edu>
+finally prodded me into fixing the old lame non\-handling of
+multi\-homed host.
+
+.SH COPYRIGHT
+Copyright (C) 1992\-98 Robert Forsman
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+.SH AUTHOR
+Robert Forsman
+ thoth@purplefrog.com
+ Purple Frog Software
+ http://web.purplefrog.com/~thoth/

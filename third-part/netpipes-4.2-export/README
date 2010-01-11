@@ -1,0 +1,168 @@
+  Enjoy NETPIPES 4
+
+  by Robert Forsman
+  thoth@purplefrog.com
+
+  primary ftp site: ftp://ftp.purplefrog.com/pub/netpipes/
+  HTML docs: http://web.purplefrog.com/~thoth/netpipes/netpipes.html
+  ssl-auth archive site: http://www.cryptography.org/ , then look in
+	the network/ subdirectory
+
+----
+
+WHY NOW? (10/28/1998)
+
+  I've been sitting on some new features and general fixes for too
+long.  It would be 4.1.2, but I added the --netslave* flags and a
+couple of new criteria for ssl-auth.  Have a slice of 4.2 pie!  yummy!
+
+  It seems to work for me, but I'm sure it has bugs ("Hey, Bob,
+beautiful car, but WHERE'S THE STEERING WHEEL?!"). 
+
+``Break it and send me the pieces.''
+						-attribution lost
+
+----
+
+BUILDING
+
+  Check the Makefile.  You will want to change where it installs
+stuff.  Some systems require extra libraries and each one requires
+slightly different compile flags.
+
+  Type "make".  Witness the miracle of compilation.
+
+If you have the US/Canada version, the SSLeay-0.8.1 library and wish
+to build ssl-auth, then instead type "make all ssl-auth".
+
+  To install the binaries and manual pages, "make INSTROOT=/usr/local
+install".  Change INSTROOT to taste (it defaults to
+/depot/collections0/netpipes-x.x).
+
+----
+
+CHANGES
+
+  4.2 added the -netslave* flags to hose.  These flags are introduced
+to cope with servers who do not gracefully deal with a close of half
+of the connection.  Also new is "support" for GNU Win32.  This
+basically involves removing the UNIX-domain sockets.  Unfortunately, I
+think there are bugs in GNU Win32 because the subprocesses are unable
+to perform I/O on the descriptors as reliably as under UNIX.  It also
+includes some porting patches.  In ssl-auth, we've added some new
+criteria: --public-key-match-cert, --cert-md5-digest, and
+--write-pem-cert.
+
+  4.1 switched over to HTML as the primary means of documentation.  I
+build the .man pages from the HTML using a mind-numbingly primitive
+and barely functional perl script.  Faucet & hose now set SO_REUSEADDR
+by default.  They had no such capability before.  This should cut down
+on the "address in use" errors.  Faucet now supports a backlog
+parameter to listen(2) like TCP Suite.  Encapsulate now supports a
+"--slave"-like mode.  Encapsulate should now support specifying the
+SCP session id.  Hose used to core dump when you forgot to specify the
+subcommand; no more.
+
+  4.0 adds a pair of new utilities.  The classic faucet and hose
+should be very solid, but encapsulate, and timelimit have seen very
+limited testing, and might not even build out-of-the-box.  As always,
+send me email with your problems.
+
+  3.0 changed the way that the subcommand is specified.  It is MUCH
+better than the ancient way.  Read the manual pages.
+
+---
+
+  EMAIL LIST!
+
+  Join the email list.  This way I will have a list of interested
+folks to whom I can announce each release.  Send email to
+majordomo@purplefrog.com with a message containing either
+
+	subscribe netpipes
+or
+	subscribe netpipes-announce
+
+  The netpipes list is for netpipes-related discussion, trading magic
+spells, help compiling, etc. but not for politics or jokes.  The
+netpipes-announce list is strictly for me to announce new releases and
+patches and includes everyone on the netpipes list (so don't subscribe
+to both).
+
+---
+
+  BABBLINGS OF A MAN DRIVEN INSANE BY HIS INSIGHT INTO THE WORKINGS OF
+  THE UNIVERSE (or, GUY WHO READ TOO MUCH H.P.LOVECRAFT)
+
+  Someone suggested using setsid(2) to disassociate myself from the
+terminal.  Sounds great.  I hope everyone has it.
+
+  Also, I need portable ways to clean up child processes.  Maybe I'll
+just read the perl source one day or buy the Stevens Advanced UNIX
+Programming book.
+
+  This program has, in the past, been compiled and tested on a DEC
+5100, an RS6k, an HP9k, an SGI, SCO v5.0.2, a Solaris box, SunOS
+4.1.3, DG/UX 4.11 MU04, and sees almost daily usage under Linux 2.0.x.
+
+  If you compile this program on an architecture/OS not mentioned
+above, drop me a line.  If you have problems compiling on any
+architecture, I want to hear about it (and I'll try to help you fix
+the problem and make sure that the next version compiles out of the
+box).
+
+  Normally, I say all software sucks, but I can now proudly say that
+NETPIPES RULES!  If you disagree, tell me why and I'll see if I can
+fix it.
+
+---
+
+  SSL-AUTH
+
+  Since SSL-AUTH uses cryptography libraries, I can't distribute it
+with the main NetPipes package.  However, I finally found a site that
+can distribute it for me.  If you are in the U.S. or Canada and are a
+citizen of those countries, you can download the full version of
+NetPipes from http://www.cryptography.org/ .  You will have to fill
+out a simple HTTP form to affirm that you can legally download the
+software, and then it will give you access.
+
+---
+
+  THINGS NOT INCLUDED
+
+  SSLeay-0.8.1 .  You need to go get your own version of this.
+ftp://ftp.psy.uq.oz.au/pub/Crypto/SSL
+
+  I want to re-distribute multitee by Dan Bernstein.  It's rather
+awkward to use properly, but when you can get the invocation just
+right, it is a nuclear-powered power-tool!  I'm currently too rushed
+to properly integrate it into the build tree, so you should just go
+get it yourself.  Assuming you can find it :/
+
+---
+
+  OTHER PACKAGES LIKE NETPIPES
+
+  The idea behind NetPipes is like the wheel.  Everybody reinvents it.
+Here are some other packages that do similar stuff, some of which
+might predate netpipes:
+
+ucspi-tcp 0.73 beta
+Apr 10, 1997
+Dan Bernstein
+http://pobox.com/~djb/ucspi-tcp.html
+
+netcat 1.10
+Mar 20, 1996
+popular with "elite hackers"
+Avian Research <hobbit@avian.org>
+ftp://avian.org/src/hacks/nc110.tgz
+Weld's NT version:
+http://l0pht.com/~weld/netcat/
+
+Socket 1.1
+September 1992
+Jürgen Nickelsen
+http://www.snafu.de/~jn/socket.html
+

@@ -1,0 +1,309 @@
+<!-- t
+$Id: ssl-auth.html,v 1.7 1998/10/28 16:07:57 thoth Exp $
+Copyright 1992-98 by Robert Forsman
+
+--><title>
+SSL-AUTH 1 "October 28, 1998"
+</title>
+<h1>NAME</h1>
+<p>ssl-auth - secure sockets for the peasants
+
+<p> netpipes 4.2
+
+<h1>SYNOPSIS</h1>
+<p>
+<b>ssl-auth</b> <b>--fd</b> <i>n</i> ( <b>--server</b> | <b>--client</b> )
+[ <b>--cert</b> <i>file</i> ]
+[ <b>--key</b> <i>file</i> ]
+[ <b>--verbose</b> ]
+[ <b>--verify</b> <i>n</i> ]
+[ <b>--CApath</b> <i>path/</i> ]
+[ <b>--CAfile</b> <i>file</i> ]
+[ <b>--cipher</b> <i>cipher-list</i> ]
+[ <b>--criteria</b> <i>criteria-expr</i> ]
+[ <b>--subproc</b> [ <b>--infd</b> <i>n</i> ] [ <b>--outfd</b> <i>n</i> ] ]
+[ <b>-</b>[<b>#</b><i>n</i>][<b>v</b>][<b>s</b>[<b>i</b><i>n</i>][<b>o</b><i>n</i>]] ]
+
+<h1>DESCRIPTION</h1>
+
+<p><b>ssl-auth</b> provides SSL capability for simple programs and shell
+scripts.  With <b>ssl-auth</b> you can secure and authenticate your
+netpipes scripts, provide secure proxies for mundane internet services
+such as IMAP, and communicate with such servers.
+
+<h1> OPTIONS</h1>
+
+<p>You must specify a file descriptor (using <b>--fd</b>) over which to
+conduct the SSL conversation.  This must be a socket (readable and
+writable), not just a pipe.  Also, you must define the polarity of the
+conversation with <b>--server</b> or <b>--client</b>.
+
+<p>Servers must specify a <b>--key</b> and a <b>--cert</b>.  Failure to
+do so generally results in a ``no shared ciphers'' error on the server
+and a ``handshake failure'' on the client.
+
+<p><b>--verbose</b> currently just prints a copyright notice.
+
+<p><b>--verify</b> <i>n</i> specifies a verify depth.  Errors deeper
+than <i>n</i> will be ignored.  Issuer errors
+(UNABLE_TO_GET_ISSUER_CERT, and UNABLE_TO_GET_ISSUER_CERT_LOCALLY) are
+treated as a depth one greater than that reported by the SSL library
+because, while they are reported as a problem with the signed
+certificate, in a common case it is better to treat them as a problem
+with the signer (issuer) certificate.  The typical value for <i>n</i>
+is 1.
+
+(behavior with the presence of --criteria in the absence of --verify
+is currently ill-defined and uninvestigated).
+
+<p><b>--CApath</b> allows you to specify the location of your
+Certificate Authority directory.  This directory contains the (usually
+self&ndash;signed) certificates from certificate authorities and the hash
+links.  Here's a BASH function to create a hash link for a certificate
+in the current directory:
+
+<pre>
+function make-ssl-cert-link {
+    hash=`x509 -noout -hash &lt; $1`
+    ln -s $1 $hash.0
+}
+</pre>
+
+<p><b>--cipher</b> lets you specify a cipher list to be passed to
+SSL_CTX_set_cipher_list().  It is a colon-separated list of names.
+Each name has an optional prefix of <b>-</b>, <b>+</b>, or <b>!</b>.
+<b>-</b> and <b>!</b> remove the cipher from the list supported by the
+library.  <b>+</b> adds the cipher to the front, and no prefix adds it
+to the front unless it is already listed.
+
+<p><b>--criteria</b> is the most powerful feature of <b>ssl-auth</b>.
+You can use it to specify a set of criteria to apply to the
+certificate chain presented by the SSL peer.  The grammar of the
+<i>criteria-expression</i> is documented in the CRITERIA LANGUAGE section
+below.
+
+<p><b>--subproc</b> allows you to specify a process that will supply
+the payload for the SSL conversation.  Without <b>--subproc</b>
+<b>ssl-auth</b> merely encrypts stdin to the socket and decrypts from
+the socket to stdout.  When <b>--subproc</b> is specified
+<b>ssl-auth</b> spawns a child, attaches pipes to the specified
+<b>--infd</b> and/or <b>--outfd</b> (if both descriptor numbers are
+the same, it attaches a socket instead of a pipe), and routes those
+data streams through the SSL socket.
+
+<p><b>ssl-auth</b> also accepts one&ndash;character compact flags.  These
+flags may be compacted together in one argument, or spread throughout
+several.  You may use any mixture of long and compact flags, as long
+as you don't mix them in the same argument.  The compact flags that
+expect arguments expect them to immediately follow their activating
+character.
+
+<p><b>-#</b> corresponds to <b>--fd</b>.
+<b>-v</b> corresponds to <b>--verbose</b>.
+<b>-s</b> corresponds to <b>--subproc</b>.
+<b>-i</b> corresponds to <b>--infd</b>.
+<b>-o</b> corresponds to <b>--outfd</b>.
+
+<h1>CRITERIA LANGUAGE</h1>
+
+<i>criteria-expr</i> : <i>prefix-unary-expr</i> <br>
+
+<i>or-list</i> : <i>and-list</i> <b>--or</b> <i>or-list</i> <br>
+<i>or-list</i> : <i>and-list</i> <b>-o</b> <i>or-list</i> <br>
+<i>or-list</i> : <i>and-list</i> <br>
+
+<i>and-list</i> : <i>prefix-unary-expr</i> <b>--and</b> <i>and-list</i> <br>
+<i>and-list</i> : <i>prefix-unary-expr</i> <b>-a</b> <i>and-list</i> <br>
+<i>and-list</i> : <i>prefix-unary-expr</i> <br>
+
+<i>prefix-unary-expr</i> : <b>--not</b> <i>term</i> <br>
+<i>prefix-unary-expr</i> : <b>!</b> <i>term</i> <br>
+<i>prefix-unary-expr</i> : <b>--depth</b> <i>integer</i> <i>term</i> <br>
+<i>prefix-unary-expr</i> : <b>-d</b> <i>integer</i> <i>term</i> <br>
+<i>prefix-unary-expr</i> : <i>term</i> <br>
+
+<i>term</i> : <b>(</b> <i>or-list</i> <b>)</b> <br>
+<i>term</i> : <b>--common-name</b> <i>string</i> <br>
+<i>term</i> : <b>--country-name</b> <i>string</i> <br>
+<i>term</i> : <b>--state-name</b> <i>string</i> <br>
+<i>term</i> : <b>--province-name</b> <i>string</i> <br>
+<i>term</i> : <b>--locality-name</b> <i>string</i> <br>
+<i>term</i> : <b>--organization-name</b> <i>string</i> <br>
+<i>term</i> : <b>--organizational-unit-name</b> <i>string</i> <br>
+<i>term</i> : <b>--department-name</b> <i>string</i> <br>
+<i>term</i> : <b>--public-key-match-cert</b> <i>fname</i> <br>
+<i>term</i> : <b>--cert-md5-digest</b> <i>32hexdigits</i>
+<i>term</i> : <b>--write-pem-cert</b> <i>fname</i> <br>
+
+<p>The grammar parsed by the <b>--criteria</b> flag will be
+unsurprising to the average computer&ndash;literate person.  At the
+lowest precedence level is the or list whose members are separated by
+<b>-o</b> or <b>--or</b>.  The next highest precedence level is the
+and list whose members are separated by <b>-a</b> or <b>--and</b>.
+The next level of precedence is the prefix unary operators which
+include <b>--not</b> (can be shortened to <b>!</b>, but be sure to
+escape it if your shell treats it specially;  most do) and
+<b>--depth</b> <i>n</i> (which can be shortened to <b>-d</b>
+<i>n</i>).  The highest precedence are the primitives (listed below).
+Precedence may be overridden using parenthesis, but remember to escape
+them with a \ because ()s are usually treated specially by the shell.
+
+<p> The following lists the correspondence between the X509 field names
+and the primitives that are designed to compare them.
+
+<p>
+
+<table roffspooge="
+lw(0.4i) lw(1.2i)
+lw(0.4i) lw(1.2i).
+"> <tr>
+<th>X509	<th>criteria primitive
+<tr><td>CN	<td>--common-name
+<tr><td>C	<td>--country-name
+<tr><td>ST	<td>--state-name, --province-name
+<tr><td>L	<td>--locality-name
+<tr><td>O	<td>--organization-name
+<tr><td>OU	<td>--organizational-unit-name, --department-name
+</table>
+
+<p> <b>--public-key-match-cert</b> compares the public key (exponent and
+modulus) from the SSL peer with the public key in the PEM-encoded
+certificate in <i>fname</i>.  This can be used to verify the identity
+of the remote end in the absence of a certificate authority.
+
+<p> <b>--cert-md5-digest</b> compares the MD5 fingerprint of the SSL
+peer's certificate with the 32-digit hex string argument.  It
+incorporates much more than the public key such as the name, issuer,
+algorithm, and signature.  You can compute the md5 fingerprint by
+running the following command upon the server's certificate.
+
+<pre>
+server$ ssleay x509 -md5 -fingerprint -in <i>certificate.pem</i> -out /dev/null
+MD5 Fingerprint=F6:0A:A2:D1:A3:12:5A:41:49:C7:56:0B:4E:67:1D:3C
+</pre>
+
+  In this case you would use a criteria of <tt>--cert-md5-digest
+F60AA2D1A3125A4149C7560B4E671D3C</tt>.
+
+<p> <b>--write-pem-cert</b> writes the certificate of the SSL peer to
+<i>fname</i> in PEM format.
+
+<h1> EXAMPLES</h1>
+
+<p> Here is an example ssl-imapd spawnable from inetd:
+<pre>
+#!/bin/sh
+
+exec &gt; /dev/null
+exec 2&gt;&amp;1
+
+exec /usr/local/bin/ssl-auth --fd 0 --server \
+        --cert /usr/local/ssl/certs/imapd.cert \
+        --key  /usr/local/ssl/private/imapd.key \
+        --CApath /usr/local/ssl/certs/ \
+        -si0o1 /usr/local/sbin/imapd
+</pre>
+
+<p> To use it, put this in your /etc/inetd.conf
+<pre>
+993     stream  tcp     nowait  root    /usr/local/sbin/ssl-imapd
+</pre>
+
+<hr width=20%>
+
+<p> If you want to turn a non-ssl IMAP client into an ssl-capable IMAP
+client, try putting this in your local machine's inetd.conf:
+<pre>
+imap stream tcp nowait root /usr/local/sbin/ssl-proxy imap.remote.com
+</pre>
+
+<p>/usr/local/sbin/ssl-proxy looks like this:
+<pre>
+#!/bin/sh
+
+exec &gt; /dev/null
+exec 2&gt;&amp;1
+
+exec hose "$1" 993 --fd 3 \
+	ssl-auth --fd 3 --client \
+        --CApath /usr/local/ssl/certs/ --verify 1 &gt;&amp;0
+</pre>
+
+<p> Now point your IMAP client at your local machine.  The connection
+should be tunnelled through SSL to the remote machine.  Tell me if it
+works...
+
+<hr width=20%>
+
+<p> If you can type HTTP requests yourself, you can probe an SSL HTTPd
+with the following command:
+
+<pre>
+$ hose web.purplefrog.com 443 --fd 3 ssl-auth --fd 3 --client
+</pre>
+
+  Then type your GET or POST request
+
+<hr width=20%>
+
+<p> To get a copy of the remote server's certificate for local
+inspection you can do this:
+
+<pre>
+$ hose web.purplefrog.com 443 --fd 3 ssl-auth --fd 3 --client \
+        --CApath /usr/local/ssl/certs/ \
+	--verify 1 --criteria --write-pem-cert tmp.cert \
+	-si0o1 /bin/true
+</pre>
+
+<h1> SEE ALSO</h1>
+<a href="netpipes.html">netpipes</a> (1),
+<a href="netpipes.html">faucet</a> (1),
+<a href="netpipes.html">hose</a> (1),
+<a href="netpipes.html">encapsulate</a> (1),
+<a href="ftp://ftp.psy.uq.oz.au/pub/Crypto/SSL/">SSLeay library</a>
+
+<h1> BUGS</h1>
+
+<p>This program is raw.  Even I don't know how to operate it fully.
+
+<h1> EXPORT LAW</h1>
+
+  As of December 1997 it is still illegal to export encryption from
+the United States to the rest of the world (with an exception or two).
+If you break the law, you will probably be repressed.
+
+<h1>CREDITS</h1>
+
+Thanks, Eric Young, for writing SSLeay.  Now tell me how to write more
+<b>--criteria</b> primitives and improve the existing ones to work for
+strangely&ndash;encoded certificates.
+
+<p> Thanks to <a
+href="mailto:shenson@drh-consultancy.demon.co.uk">Dr. Stephen Henson
+&lt;shenson@drh-consultancy.demon.co.uk&gt;</a> for numerous hints and
+answers.
+
+<h1>COPYRIGHT</h1>
+
+Copyright (C) 1997-98 Robert Forsman
+
+<p>This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+<p>This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+<p>You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+<h1> AUTHOR</h1>
+ Robert Forsman <br>
+ <a href="mailto:thoth@purplefrog.com">thoth@purplefrog.com</a> <br>
+ <a href="http://web.purplefrog.com/">Purple Frog Software</a> <br>
+ <a href="http://web.purplefrog.com/~thoth/">http://web.purplefrog.com/~thoth/</a>

@@ -1,0 +1,286 @@
+.\"
+.\"$Id: netpipes.html,v 1.9 1998/10/28 20:29:01 thoth Exp $ Copyright 1995 by Robert Forsman
+.TH NETPIPES 1 "October 28, 1997"
+
+.SH NAME
+netpipes - a package to manipulate BSD TCP/IP stream sockets
+
+version 4.2
+
+.SH  SYNOPSIS
+
+\fBfaucet\fP \fIport\fP
+(\fB\-\-in\fP|\fB\-\-out\fP|\fB\-\-err\fP|\fB\-\-fd\fP \fIn\fP)+
+[\fB\-\-once\fP]
+[\fB\-\-verbose\fP]
+[\fB\-\-quiet\fP]
+[\fB\-\-unix\fP]
+[\fB\-\-foreignhost\fP \fIaddr\fP]
+[\fB\-\-foreignport\fP \fIport\fP]
+[\fB\-\-localhost\fP \fIaddr\fP]
+[\fB\-\-serial\fP]
+[\fB\-\-daemon\fP]
+[\fB\-\-shutdown\fP (r|w) ]
+[\fB\-\-pidfile\fP \fIfilename\fP]
+[\fB\-\-noreuseaddr\fP]
+[\fB\-\-backlog\fP \fIn\fP]
+[\fB\-\fP[\fBi\fP][\fBo\fP][\fBe\fP][\fB#\fP\fI3\fP[,\fI4\fP[,\fI5\fP...]]][\fBv\fP][\fB1\fP][\fBq\fP][\fBu\fP][\fBd\fP][\fBs\fP]]
+[\fB\-p\fP \fIforeign\-port\fP]
+[\fB\-h\fP \fIforeign\-host\fP]
+[\fB\-H\fP \fIlocal\-host\fP]
+\fIcommand\fP \fIargs\fP
+
+\fBhose\fP \fIhostname\fP \fIport\fP
+(\fB\-\-in\fP|\fB\-\-out\fP|\fB\-\-err\fP|\fB\-\-fd\fP \fIn\fP|\fB\-\-slave\fP)
+[\fB\-\-verbose\fP]
+[\fB\-\-unix\fP]
+[\fB\-\-localport\fP \fIport\fP]
+[\fB\-\-localhost\fP \fIaddr\fP]
+[\fB\-\-retry\fP \fIn\fP]
+[\fB\-\-delay\fP \fIn\fP]
+[\fB\-\-shutdown\fP [r|w][a] ]
+[\fB\-\-noreuseaddr\fP]
+[\fB\-\fP[\fBi\fP][\fBo\fP][\fBe\fP][\fB#\fP\fI3\fP[,\fI4\fP[,\fI5\fP...]]][\fBs\fP][\fBv\fP][\fBu\fP]]
+[\fB\-p\fP \fIlocal\-port\fP]
+[\fB\-h\fP \fIlocal\-host\fP]
+\fIcommand\fP \fIargs\fP
+
+\fBencapsulate\fP
+\fB\-\-fd\fP \fIn\fP 
+[ \fB\-\-verbose\fP ]
+[ \fB\-\-subproc\fP 
+[ \fB\-\-infd\fP \fIn\fP[\fB=\fP\fIsid\fP] ]
+[ \fB\-\-outfd\fP \fIn\fP[\fB=\fP\fIsid\fP] ]
+[ \fB\-\-duplex\fP \fIn\fP[\fB=\fP\fIsid\fP] ]
+[ \fB\-\-Duplex\fP \fIn\fP[\fB=\fP\fIsid\fP] ]
+[ \fB\-\-DUPLEX\fP \fIn\fP[\fB=\fP\fIsid\fP] ]
+[ \fB\-\-prefer\-local\fP ]
+[ \fB\-\-prefer\-remote\fP ]
+[ \fB\-\-local\-only\fP ]
+[ \fB\-\-remote\-only\fP ]
+]
+[ \fB\-\-client\fP ]
+[ \fB\-\-server\fP ]
+\fB\-\fP[\fB#\fP\fIn\fP][\fBv\fP][\fBs\fP[\fBi\fP\fIn\fP][\fBo\fP\fIn\fP][\fBd\fP\fIn\fP][\fBio\fP\fIn\fP][\fBoi\fP\fIn\fP][\fBl\fP][\fBr\fP][\fBL\fP][\fBR\fP]]
+\fIcommand args ...\fP
+
+\fBssl\-auth\fP \fB\-\-fd\fP \fIn\fP ( \fB\-\-server\fP | \fB\-\-client\fP )
+[ \fB\-\-cert\fP \fIfile\fP ]
+[ \fB\-\-key\fP \fIfile\fP ]
+[ \fB\-\-verbose\fP ]
+[ \fB\-\-verify\fP \fIn\fP ]
+[ \fB\-\-CApath\fP \fIpath/\fP ]
+[ \fB\-\-CAfile\fP \fIfile\fP ]
+[ \fB\-\-cipher\fP \fIcipher\-list\fP ]
+[ \fB\-\-criteria\fP \fIcriteria\-expr\fP ]
+[ \fB\-\-subproc\fP [ \fB\-\-infd\fP \fIn\fP ] [ \fB\-\-outfd\fP \fIn\fP ] ]
+[ \fB\-\fP[\fB#\fP\fIn\fP][\fBv\fP][\fBs\fP[\fBi\fP\fIn\fP][\fBo\fP\fIn\fP]] ]
+
+\fBsockdown\fP
+[\fIfd\fP
+[\fIhow\fP] ]
+
+\fBgetpeername\fP
+[ \fB\-verbose\fP ]
+[ \fB\-sock\fP ]
+[ \fIfd\fP ]
+
+\fBgetsockname\fP
+[ \fB\-verbose\fP ]
+[ \fB\-peer\fP ]
+[ \fIfd\fP ]
+
+\fBtimelimit\fP
+[ \fB\-v\fP ]
+[ \fB\-nokill\fP ]
+\fItime\fP
+\fIcommand args\fP
+
+.SH  DESCRIPTION
+
+The netpipes package makes TCP/IP streams usable in shell scripts.
+It can also simplify client/server code by allowing the programmer to
+skip all the tedious programming bits related to sockets and
+concentrate on writing a filter/service.
+
+\fI``Why would anyone want to do that?''\fP
+ \fI-- Richard Stallman\fP
+
+\fBfaucet\fP is the server end of a TCP/IP stream.  It listens on a
+port of the local machine waiting for connections.  Every time it gets
+a connection it forks a process to perform a service for the
+connecting client.
+
+\fBhose\fP is the client end of a TCP/IP stream.  It actively
+connects to a remote port and execs a process to request a service.
+
+\fBencapsulate\fP is an implementation of the Session Control
+Protocol.  It allows you to multiplex several streams across a single
+TCP session and also transmits remote exit status.
+
+\fBssl\-auth\fP is an encryption filter that encapsulates
+stdin/stdout from a subprocess (or its own stdin/stdout) in the Secure
+Socket Layer protocol as implemented by the SSLeay library.  It
+can be used to communicate with encrypted daemons (HTTPS daemons, or
+SSL IMAP daemons) and can sometimes be used to jury\-rig secure
+versions of such services.
+
+\fBsockdown\fP is a simple program designed to shut down part or all
+of the socket connection.  It is primarily useful when the processes
+connected to the socket perform both input and output.
+
+\fBgetpeername\fP and \fBgetsockname\fP are two names for a program
+designed to print out the addresses of the ends of a socket.
+\fBgetpeername\fP prints the address of the remote end and
+\fBgetsockname\fP prints the address of the local end.
+
+\fBtimelimit\fP limits the amount of foreground wallclock time a
+process can consume.  After the time limit runs out it either kills
+the process or exits and leaves it in the background.
+
+.SH  EXAMPLES
+
+Here is a simple command I often perform to transfer directory trees
+between machines.  (rsh does not work because one machine is connected
+using SLIP and .rhosts are out of the question).
+
+.nf 
+server$ faucet 3000 \-\-out tar cf \- .
+client$ hose server 3000 \-\-in tar xvf \-
+.fi
+
+Here is a minimal HTTP client.  It is so minimal it speaks old HTTP.
+
+.nf 
+cairo$ hose www.cis.ufl.edu 80 \-\-in \-\-out \\
+	sh \-c "(echo 'GET /'; sockdown) & cat > result"
+.fi
+
+And of course, there is Nick Trown's metaserver for Netrek
+
+.nf 
+cairo$ hose metaserver.ecst.csuchico.edu 3521 \-\-in cat
+.fi
+
+Allow me to apologize ahead of time for the convolutedness of the
+following example.  It requires an understanding of Bourne shell file
+descriptor redirection syntax (and illustrates why csh and tcsh suck
+eggs).  Do not try to type this from your tcsh command line.  Get a
+bash (GNU's Bourne Again SHell).
+
+Suppose you want to distinguish between stdout and stderr of a remote process
+
+.nf 
+remote$ faucet 3000 \-\-fd 3 \\
+   encapsulate \-\-fd 3 \-\-infd 0 \-\-outfd 1 \-\-outfd 2 \-\-subproc \\
+	remote\-app
+local$ hose remote 3000 \-\-fd 3 \\
+   encapsulate \-\-fd 3 \-\-outfd 3 \-\-infd 4 \-\-infd 5 \-\-subproc \\
+	sh \-c "cat 0<&4 3>&\- & cat 0<&5 1>&2 3>&\- & \\
+	    cat 1>&3 ; exec 3>&\-"
+.fi
+
+Close all unneeded file descriptors when you spawn a background task.
+That's why the backgrounded cats have 3>&\-.
+
+.nf 
+server$ faucet 3000 \-\-in \-\-out \-\-verbose enscript \-2rGhp \-
+client$ ps aux | hose server 3000 \-\-in \-\-out \\
+	sh \-c " (cat <&3; sockdown ) & cat >&4 " 3<&0 4>&1 | \\
+	lpr \-Pps422
+#or perhaps this, but I haven't tested it
+client$ ps aux | hose server 3000 \-\-fd 3 \\
+	sh \-c " (cat >&3; sockdown 3 ) & cat <&3 " | \\
+	lpr \-Pps422
+.fi
+
+This proves that hose \fIcan\fP be used as part of a pipeline to
+perform a sort of remote procedure call (RPC).  After you have figured
+out that example, you will know how to use Bourne shell to shuffle
+file descriptors around.  It is a handy skill.
+
+Now we go to the extreme, but simplify things by using the
+\fI\-\-slave\fP option of hose.  The following is a socket relay
+
+.nf 
+gateway$ faucet 3000 \-io hose server 4000 \-\-slave
+.fi
+
+It's a handy little bugger when you want to tunnel through a firewall
+on an occasional basis.  If you experience ``hanging'' of the
+connection, try using the \fI\-\-netslave\fP option instead of
+\fI\-\-slave\fP. (telnet proxies would benefit from this)
+
+For those of you who use ssh, here's how to tunnel some information
+through an encrypted SSH port forward.
+
+.nf 
+server$ faucet 3000 \-1v \-\-fd 1 \-\-foreignhost server echo blah 
+client$ ssh \-n \-x \-L 3000:server:3000 server sleep 60 &
+client$ hose localhost 3000 \-\-fd 0 \-retry 10 cat
+.fi
+
+The trick with ssh's port forwarding, is that the shutdown(2) system
+call causes ssh to close both halves of the full-duplex connection
+instead of only one half.  That's why you have to use \-\-fd 1 and \-\-fd
+0.  If you need to be able to close half of the connection while still
+using the other, use the encapsulate wrapper.
+
+.nf 
+server$ faucet 3000 \-1v \-\-fd 3 \-\-foreignhost server \\
+	encapsulate \-\-fd 3 \-\-server \-si0o1 tr a\-z A\-Z
+client$ ssh \-n \-x \-L 3000:server:3000 server sleep 60 &
+client$ echo blah | hose localhost 3000 \-\-fd 3 \-retry 10 \\
+	encapsulate \-\-fd 3 \-\-client
+.fi
+
+.SH  SEE ALSO
+faucet\ (1),
+hose\ (1),
+encapsulate\ (1),
+sockdown\ (1),
+getpeername\ (1),
+timelimit\ (1),
+ssl\-auth\ (1)
+
+.SH BUGS
+
+Report any bugs or feature requests to thoth@purplefrog.com
+
+.SH CREDITS
+Thanks to Harbor Development
+Inc. for funding some of the netpipes development.
+
+Thanks to Michal Jaegermann <michal@ellpspace.math.ualberta.ca>
+for some bug fixes and glibc portability suggestions against 4.1.1 .
+
+Big thanks to Joe Traister <traister@gate.net> for his
+signal handling patches, strerror surrogate, and other assorted hacks.
+
+.SH COPYRIGHT
+Copyright (C) 1995-98 Robert Forsman
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+.SH DOWNLOAD
+Export Version: ftp://ftp.purplefrog.com/pub/netpipes/
+
+U.S./Canada version with ssl\-auth: http://www.cryptography.org/ , then find it in the network/ subdirectory.
+
+.SH AUTHOR
+Robert Forsman
+ thoth@purplefrog.com
+ Purple Frog Software
+ http://web.purplefrog.com/~thoth/

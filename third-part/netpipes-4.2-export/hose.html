@@ -1,0 +1,306 @@
+<!-- t
+ $Id: hose.html,v 1.4 1998/10/28 16:07:57 thoth Exp $
+ Copyright 1992-98 by Robert Forsman
+-->
+<title> HOSE 1 "October 28, 1998"</title>
+<h1>NAME</h1>
+hose - the client end of a BSD network pipe
+
+<p> netpipes 4.2
+
+<h1>SYNOPSIS</h1>
+<b>hose</b> <i>hostname</i> <i>port</i>
+(<b>--in</b>|<b>--out</b>|<b>--err</b>|<b>--fd</b> <i>n</i>|<b>--slave</b>|<b>--netslave</b>|<b>--netslave1</b>|<b>--netslave2</b>)
+[<b>--verbose</b>]
+[<b>--unix</b>]
+[<b>--localport</b> <i>port</i>]
+[<b>--localhost</b> <i>addr</i>]
+[<b>--retry</b> <i>n</i>]
+[<b>--delay</b> <i>n</i>]
+[<b>--shutdown</b> [r|w][a] ]
+[<b>--noreuseaddr</b>]
+[<b>-</b>[<b>i</b>][<b>o</b>][<b>e</b>][<b>#</b><i>3</i>[,<i>4</i>[,<i>5</i>...]]][<b>s</b>][<b>v</b>][<b>u</b>]]
+[<b>-p</b> <i>local-port</i>]
+[<b>-h</b> <i>local-host</i>]
+<i>command</i> <i>args</i>
+
+<h1>DESCRIPTION</h1>
+<p>
+<B>hose</B>
+attempts to provide the functionality of pipes over the network.  It
+behaves as the client end of a server-client connection.  When used
+with
+<B>faucet(1)</B>
+it can function as a replacement for
+<pre>
+tar -cf - . | rsh other "cd destdir; tar -xf -"
+</pre>
+<B>faucet</B>
+and
+<B>hose</B>
+are especially useful when you don't have easy non-interactive access
+to the destination machine.
+
+<h1>OPTIONS</h1>
+<p> <B>hose</B>
+creates a BSD socket and, if the
+<B>--localport</B>
+option is used, binds it to the port number (or service name)
+specified immediately afterwards.  If
+<B>--localhost</B>
+is also specified then its argument is a local address to bind to. (
+<B>--localhost</B>
+is only useful on machines with multiple IP addresses.)
+
+<p> <B>hose</B>
+then tries to connect to the foreign machine
+<I>hostname</I>
+with foreign port
+<I>port.</I>
+
+<p> If successful
+<B>hose</B>
+redirects the socket to stdin, stdout, stderr, and/or arbitrary file
+descriptors according to the
+<B>--in --out --err --fd <i>n</i></B>
+flags.  <b>hose</b> also automagically shuts down the unused half of
+the connection if only <b>--in</b> is specified or if only
+<b>--out</b> and/or <b>--err</b> are specified.  See the
+<b>--shutdown</b> option for more information.
+
+<p> <B>hose</B>
+then exec(2)s a <i>command</i> with <i>args</i>.
+
+<p> However, the <b>--slave</b> flag turns <b>hose</b> into a primitive
+sort of telnet.  The <i>command</i> is ignored.  Instead, <b>hose</b>
+goes into a loop where it copies bytes from stdin to the socket, and
+bytes from the socket to stdout.  This is actually more useful than
+telnet because telnet tries to perform interpretation on the byte
+stream and generally gets in your way.  <b>hose</b> just passes bytes
+without mucking with them.
+
+<p> The <b>--netslave*</b> options are variants on the <b>--slave</b>
+theme.  Whereas <b>--slave</b> will continue to forward data in one
+direction even after the other has encountered EOF, <b>--netslave</b>
+variants are more aggressive in closing the entire socket.  Before
+closing the socket, it attempts to flush any data already in its own
+buffer.  <b>--slave</b> performs the shutdown(2) system call when it
+encounters EOF on one direction, but the <b>--netslave</b> variants
+don't because some network daemons are confused by it.
+
+<p> <b>--netslave</b> closes down the connection when it encounters
+EOF in either direction.
+
+<p> <b>--netslave1</b> closes down the connection when it encounters
+EOF while reading stdin.  Any data unread on the socket will be
+ignored.  If it merely encounters EOF on the socket, it will continue
+to read from stdin.
+
+<p> <b>--netslave2</b> closes down the connection when it encounters
+EOF while reading from the socket.  Any data unread on stdin will be
+ignored.  If it merely encounters EOF on stdin, it will continue to
+read from the socket.  This mode can be useful with some web servers.
+
+<p> The
+<B>--verbose</B>
+flag specifies that
+<B>hose</B>
+should print information about the host it connects to.  This
+information includes the numeric host address, host names, and foreign
+port numbers.
+
+<p> The
+<B>--unix</B>
+flag specifies that the
+<I>port</I>
+is not an internet port number or service name, but instead it is a
+filename for a UNIX domain socket.  This option may be simulated by
+using 
+<B>-unix-</B>
+as the host name to connect to, or by renaming the
+<B>hose</B>
+program to <b>uhose</b>.
+
+<p> <B>--retry</B>
+<I>n</I>
+allows the user to specify that
+<b>hose</b>
+should retry the connect(2) call for
+<I>n</I>
+times (or forever if
+<I>n</I>
+is negative).
+<B>--delay</B>
+<I>n</I>
+specifies how many seconds to delay between tries.
+
+<p> <B>--shutdown</B>
+is used to control two behaviors.  The first set is controlled by the
+`r' and `w' flags.
+  If the `r' is present, then <b>hose</b> will close half the
+connection to make it a read-only socket.  If the child tries to
+write, it will fail.  If the remote connection tries to read, it will
+percieve the socket as closed.
+  If instead the `w' is present, then <b>hose</b> will close the other
+half of the connection to make it a write-only socket.  If the child
+tries to read, it will percieve the socket as closed.  If the remote
+connection tries to write, it will fail.
+  The default behavior is to leave both halves open, however the
+shutdown of half of the connection is automagically done by certain
+combinations of the <b>--in</b>, <b>--out</b>, and <b>--err</b>
+flags.  To suppress their automagic behavior you can use
+(respectively) --fd 0, --fd 1, and --fd 2.
+
+<p>  The other behavior is controlled by the `a' flag.  If the `a' flag is
+present then <b>hose</b> will fork(2) before execcing the
+<I>command</I>
+and when the child exits it will perform a shutdown(2) with how=2.
+This closes both halves of the connection.  This option is not
+necessary for most applications since the closing of the file
+descriptors is detected by the remote process, but some less
+sophisticated network devices (such as printers) require a shutdown(2)
+for proper operation.
+  To make things perfectly clear, the list of acceptable arguments to
+the <b>--shutdown</b> option are `r', `w', `ra', `wa', `a'.
+
+<p> By default, <b>hose</b> performs a
+
+<pre> setsockopt(fd, SOL_SOCKET, SO_REUSEADDR...)</pre>
+
+ which prevents the ``Address in use'' problem that ``plagued''
+netpipes versions 4.0 and earlier.  <b>--noreuseaddr</b> tells
+<b>hose</b> to skip that system call, and revert to pre-4.1 behavior.
+Without this call, the port is not always available for immediate
+reuse after the <b>hose</b> exits.
+
+
+<h1>SHORT FLAGS</h1>
+To reduce the typing requirements for arguments (and to pay homage to
+the age-old tradition of UNIX cryptotaxonomy) I have added some short
+forms of the flags.  Here is a correspondence chart:
+
+<table roffspooge="
+|lw(0.4i)|lw(1.2i)|
+|cw(0.4i)|lw(1.2i)|.
+">
+<tr><th>Short	<th>Long
+<tr><td><b>i</b>	<td><b>in</b>
+<tr><td><b>o</b>	<td><b>out</b>
+<tr><td><b>e</b>	<td><b>err</b>
+<tr><td><b>#</b><i>n</i>	<td><b>fd</b><i>n</i>
+<tr><td><b>s</b>	<td><b>slave</b>
+<tr><td><b>v</b>	<td><b>verbose</b>
+<tr><td><b>q</b>	<td><b>quiet</b>
+<tr><td><b>u</b>	<td><b>unix</b>
+<tr><td><b>p</b>	<td><b>localport</b>
+<tr><td><b>h</b>	<td><b>localhost</b>
+</table>
+
+<p> See faucet(1) for a more detailed discussion of short flags.  Their
+behavior should be unsurprising.  The flags that require separate
+arguments follow in the tradition of tar(1).
+
+<h1>EXAMPLES</h1>
+<p>
+This will connect to port 3000 on the machine reef and connect the
+socket to the stdin of a tar command.
+<pre>
+example$ hose reef 3000 --in tar -xf - .
+</pre>
+The command actually exec(2)ed by the
+<B>hose</B>
+program is
+<pre>
+tar -xf - .
+</pre>
+The
+<B>--in</B>
+option means that the input of the child process will have been
+redirected into the socket connected to reef.
+
+<p>
+This connects to a UNIX domain socket in the current directory
+<pre>
+example$ hose --unix- u-socket --in sh -c \
+	"unfunky.perl.script | dd of=sample.pgm"
+</pre>
+The socket provides input to the sh command.
+
+<h1>SEE ALSO</h1>
+<a href="netpipes.html">netpipes</a> (1),
+<a href="faucet.html">faucet</a> (1),
+<a href="sockdown.html">sockdown</a> (1),
+<a href="getpeername.html">getpeername</a> (1),
+socket (2),
+bind (2),
+connect (2),
+shutdown (2),
+services (5),
+gethostbyaddr (3)
+
+<h1>NOTES</h1>
+<p>
+Doubtless there are bugs in this program, especially in the unix
+domain socket portions.  I welcome problem reports and would like to
+make these programs as "clean" (no leftover files, sockets) as
+possible.
+
+<p> 4.0 made the full-word arguments use -- like many GNU programs.
+They are still available with a single - for backward-compatibility.
+
+<p> 3.1 added the single-character flags.
+
+<p> Release 2.3 added support for multi-homed hosts: hosts with multiple
+internet numbers (such as gateways).  Before this faucet assumed that
+the first internet number that gethostbyname returned was the only
+one.
+<B>--foreignport</B>
+authentication was weakened by this inadequacy so I beefed up the
+algorithms.  
+<B>--foreignport</B>
+ will accept a connection from any of the
+internet numbers associated with the host name.  
+
+<h1>CREDITS</h1>
+
+<p> Thanks to Steve Clift &lt;<a
+href="mailto:clift@ml.csiro.au">clift@ml.csiro.au</a>&gt; for SGI
+(SysV) patches.
+
+<p> Many people complained about the old way of specifying the
+command.  Thanks to whoever gave me the alternative which is now
+implemented.  It is much better.
+
+<p> Thanks to Sten Drescher &lt;<a
+href="mailto:smd@hrt213.brooks.af.mil">smd@hrt213.brooks.af.mil</a>&gt;
+for the --retry and --delay patches and giving me the idea for the
+--shutdown option.  Evidently some printer doesn't appreciate the
+socket being close(2)d.
+
+<p> Randy Fischer &lt;<a
+href="mailto:fischer@ucet.ufl.edu">fischer@ucet.ufl.edu</a>&gt;
+finally prodded me into fixing the old lame non-handling of
+multi-homed host.
+
+<h1>COPYRIGHT</h1>
+Copyright (C) 1992-98 Robert Forsman
+
+<p> This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+<p> This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+<p> You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+<h1>AUTHOR</h1>
+ Robert Forsman <br>
+ <a href="mailto:thoth@purplefrog.com">thoth@purplefrog.com</a> <br>
+ <a href="http://web.purplefrog.com/">Purple Frog Software</a> <br>
+ <a href="http://web.purplefrog.com/~thoth/">http://web.purplefrog.com/~thoth/</a>

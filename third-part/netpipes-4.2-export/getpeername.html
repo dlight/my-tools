@@ -1,0 +1,217 @@
+<!-- $Id: getpeername.html,v 1.3 1998/10/28 16:07:57 thoth Exp $ Copyright 1995-98 by Robert Forsman
+-->
+<title> GETPEERNAME 1 "March 18, 1998"</title>
+<h1>NAME</h1>
+getpeername - get information about this or that end of the socket's
+connection
+
+<p> netpipes 4.2
+
+<h1>SYNOPSIS</h1>
+<b>getpeername</b>
+[ <b>-verbose</b> ]
+[ <b>-sock</b> ]
+[ <i>fd</i> ]
+
+<p> <b>getsockname</b>
+[ <b>-verbose</b> ]
+[ <b>-peer</b> ]
+[ <i>fd</i> ]
+
+<h1>DESCRIPTION</h1>
+
+<p> This is <b>not</b> the manual page for the getpeername system call.
+That manual page is in section 2.  You can access it using a command
+like "man 2 getpeername" or "man -s 2 getpeername".  I apologize for
+the confusion.
+
+<p> <B>getpeername</B>
+performs a getpeername(2) system call on one of its file descriptors
+specified by <i>fd</i> and prints out the results.  The default <i>fd</i>
+is 0 (stdin).  You may cause
+<B>getpeername</B>
+to behave like
+<B>getsockname</B>
+by providing the -sock argument.
+
+<p> <B>getsockname</B>
+performs a getsockname(2) system call on one of its file descriptors
+specified by <i>fd</i> and prints out the results. The default <i>fd</i>
+is 0 (stdin).  You may cause
+<B>getsockname</B>
+to behave like
+<B>getpeername</B>
+by providing the -peer argument.
+
+<p> There is a severe limitation of <b>getpeername</b>.  If the remote
+process has closed the connection, <b>getpeername</b> will fail with a
+`Socket is not connected' error.  This will happen with dismaying
+frequency when the remote process is not dependent upon the local
+process for input and it is only sending small amounts of output
+before closing the connection.  Hopefully the practical uses of
+<b>getpeername</b> (if there are any) will not exercise this problem.
+
+<p> You can use
+<B>getpeername</B>
+to find out the address of the opposite end of a socket.  You can use
+<B>getsockname</B>
+to find out the address of the local end of a socket.  They are in
+fact the same program with different names.  We will refer to both of
+them by the name
+<B>getpeername</B>
+in the following description.
+
+<p> <B>getpeername</B>
+knows how to display peer information about UNIX and Internet sockets.
+If you try to use it on another type of socket, it will fail with an
+"unknown address family" error.  If you regularly deal with strange
+sockets and wish <b>getpeername</b> to work with them, send me email.
+
+<p> If the socket is a UNIX domain socket, then <b>getpeername</b> prints the
+name of the file (which is the port) on a single line.  If
+<B>-verbose</B>
+was specified, <b>getpeername</b> prints a more detailed report consisting of
+the word `Unix' on the first line, the word `Port' on the second line,
+and the name of the file on the third line.
+
+<p> If the socket is an Internet socket, then <b>getpeername</b>
+prints the port number on the first line and the numeric address on
+the second line.  If <B>-verbose</B> was specified, <b>getpeername</b>
+prints a more detailed report consisting of the word `Internet' on the
+first line, the word `Port' on the second line, the port numer on the
+third line, the word `Host' on the fourth line.  Starting on the fifth
+line it prints all the numeric internet addresses returned by the
+gethostbyaddr(3) library routine.  On the rest of the lines it prints
+all the host names.
+
+<h1>EASTER EGG</h1>
+<p> If you specify <b>-verbose</b> twice, the program will print a
+copyright notice.
+
+<h1>EXAMPLES</h1>
+<p> I originally designed <b>getpeername</b> so that a faucet-spawned shell
+script could find out who was talking to it (and maybe perform access
+control).  I added getsockname for completeness.  Now I realize that
+getsockname is useful for multi-homing services.  However, most
+software that you want to understand multi-homing (httpd, ftpd) is
+already capable of doing it, and much more efficiently than a script
+wrapper.  Still, it might come in handy some day.
+
+<p>
+<pre>
+client$ hose mail.cise.ufl.edu smtp --in ./getpeername
+25
+128.227.205.210
+</pre>
+
+<p> You connected to mail.cis.ufl.edu on the SMTP port (port 25).  For a
+verbose report:
+
+<p>
+<pre>
+client$ hose mail.cise.ufl.edu smtp --in ./getpeername -v
+Internet
+Port
+25
+Host
+128.227.205.210
+fireant.cise.ufl.edu
+</pre>
+
+<p> Now let's give an example of a race condition which will cause
+<b>getpeername</b> to fail:
+
+<p>
+<pre>
+client$ hose web.cise.ufl.edu 80 -in ./getpeername
+./getpeername: getpeername failed on descriptor 0: Socket is not connected
+</pre>
+
+<p> The HTTP daemon tries to read a request, finds that half of the full
+duplex connection closed (by the special behavior of the -in option on
+hose(1)) and drops the connection before <b>getpeername</b> can query the
+file descriptor.  We can cause the HTTP daemon to wait for us by
+leaving both halves of the duplex connection open.
+
+<p>
+<pre>
+client$ hose web.cise.ufl.edu 80 -fd0 ./getpeername -v
+Internet
+Port
+80
+Host
+128.227.205.206
+flood.cise.ufl.edu
+</pre>
+
+<p> And, finally, let's extract some useful information from our socket.
+
+<p>
+<pre>
+client$ hose web.cise.ufl.edu 80 -fd0 sh -c " ./getpeername -v | \
+	tail +5 | egrep -v '^[0-9.]*$' | head -1"
+flood.cise.ufl.edu
+</pre>
+
+<h1>ERRORS</h1>
+<B>Socket operation on non-socket</B>
+The <i>fd</i> you specified does not refer to a socket, or refers to a
+socket that has been closed.  This happens when you run <b>getpeername</b> by
+itself (it is unlikely that any of the file descriptors attached to an
+interactive shell are actually sockets), or if you goof up your
+faucet/hose command and forgot to dup(2) one of your descriptors, or
+if the remote machine manages to close the connection before
+<b>getpeername</b> could run.
+
+<p> <B>Bad file number</B>
+You gave it a bad file number for <i>fd</i>.  If you have enough skill
+to actually generate this error, you probably know what is wrong.
+
+<p> If you encounter any other errors, clue me in.
+
+<h1>SEE ALSO</h1>
+<a href="netpipes.html">netpipes</a> (1),
+<a href="faucet.html">faucet</a> (1),
+<a href="hose.html">hose</a> (1),
+<a href="sockdown.html">sockdown</a> (1),
+socket (2),
+shutdown (2),
+
+<h1>BUGS</h1>
+<p> These programs are vulnerable to reverse DNS lookup spoofing.  You
+probably want to add ``nospoof on'' to your /etc/host.conf.
+
+<h1>NOTES</h1>
+<p>
+Just avoid doing anything funky like passing <b>getpeername</b>
+strings and it should serve you well.
+
+<p> DOH!  3.0 didn't use the ntohs macro on the port numbers so the
+output was bogus on machines with non-network-order port numbers (like
+Linux-i386).  3.1 fixed this.
+
+<h1>CREDITS</h1>
+<p> "Hi Mom! Hi Dad!"
+
+<h1>COPYRIGHT</h1>
+Copyright (C) 1995-98 Robert Forsman
+
+<p> This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+<p> This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+<p> You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+<h1>AUTHOR</h1>
+ Robert Forsman <br>
+ <a href="mailto:thoth@purplefrog.com">thoth@purplefrog.com</a> <br>
+ <a href="http://web.purplefrog.com/">Purple Frog Software</a> <br>
+ <a href="http://web.purplefrog.com/~thoth/">http://web.purplefrog.com/~thoth/</a>

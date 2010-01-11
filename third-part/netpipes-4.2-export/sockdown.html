@@ -1,0 +1,161 @@
+<!-- $Id: sockdown.html,v 1.4 1998/10/28 16:07:57 thoth Exp $ Copyright 1995 by Robert Forsman
+-->
+<title> SOCKDOWN 1 "July 7, 1998"</title>
+
+<h1>NAME</h1>
+
+sockdown - shutdown(2) a socket
+
+<p> netpipes 4.2
+
+<h1>SYNOPSIS</h1>
+<b>sockdown</b>
+[ <i>fd</i>
+[<i>how</i>] ]
+
+<h1>DESCRIPTION</h1>
+
+<p> <B>sockdown</B>
+performs the shutdown(2) system call on one of its file descriptors
+specified by <i>fd</i>.  The possible values for <i>how</i> are
+
+<p> <div align=center>
+<table roffspooge="
+|lw(0.4i)|lw(2i)|."
+>
+<tr> <td>writeonly	<td>convert to write-only file descriptor
+<tr> <td>0		<td>convert to write-only file descriptor
+<tr> <td>writeonly	<td>symbolic for same as above
+<tr> <td>1		<td>convert to read-only file descriptor
+<tr> <td>readonly	<td>symbolic for same as above
+<tr> <td>2		<td>complete shutdown.  no reads or writes allowed in the future
+<tr> <td>totally	<td>symbolic for same as above
+</table>
+</div>
+</p>
+
+The default <i>fd</i> is 1 (stdout) and the default <i>how</i> is 1.
+
+<h1>EXAMPLES</h1>
+<p> Imagine you have a machine that can perform a service (in this case
+conversion from ASCII to fancy postscript) :
+<pre>
+server$ faucet 3000 --in --out enscript -2rGhp -
+</pre>
+You may then connect to it with a hose.  However, the first example enters deadlock :
+<pre>
+client$ hose server 3000 -in -out \
+	sh -c " cat blah.txt &amp; cat &gt; blah.ps "
+</pre>
+The enscript blocks waiting for input from the socket because not all
+of the client processes have exited.  While the cat blah.txt is
+finished, the cat &gt; blah.ps is not, and will not be finished until the
+remote enscript process finishes writing.  The enscript process will
+not finish writing until it is finished reading, but that
+client-&gt;server half of the socket is still open and will not be closed
+until all the client processes are done.  The result is deadlock.
+
+<p> So, we use sockdown to close half of the pipe
+<pre>
+client$ hose server 3000 -in -out \
+	sh -c " ( cat blah.txt ; sockdown ) &amp; cat &gt; blah.ps "
+</pre>
+This way when the cat blah.txt is done, half of the socket is shut
+down and the remote enscript process runs out of input, causing it to
+flush its output and exit, so eventually the whole mess finishes
+cleanly.
+
+<p> Note: the &amp; on the hose is necessary to prevent another deadlock.  If
+we simply used the ; to serialize the two cat processes it is possible
+that the enscript would fill up its write buffer before the first cat
+was done causing both processes to block and preventing the second cat
+from draining the pipe.
+
+<p> Of course, that idiomatic usage of hose is so useful that it is a
+special form:
+
+<p>
+<pre>
+client$ hose server 3000 -slave &lt; blah.txt &gt; blah.ps
+</pre>
+
+<p> Ian Stirling <a
+href="mailto:root@mauve.demon.co.uk">&lt;root@mauve.demon.co.uk&gt;</a>
+informs me that <b>sockdown</b> can be used in Linux's
+/proc/<i>pid</i>/fd/ directories to tear down hung network
+connections.  I have since used this myself on a wedged MOMspider.  To
+try this, you have to know the PID of the program and the file
+descriptor of the wedged socket (can sometimes be found by running
+<b>strace</b> and see if the program is stuck in a read(2) system
+call).  If the PID is 991 and the socket's descriptor is 5, you do
+this <em>as root</em>:
+
+<pre>
+bash# sockdown 1 2 > /proc/991/fd/5
+</pre>
+
+<h1>ERRORS</h1>
+<B>Socket operation on non-socket</B>
+
+<p> <B>Invalid argument (seen on Solaris)</B>
+  The <i>fd</i> you specified does not refer to a socket.  This happens
+when you run sockdown by itself (it is unlikely that any of the file
+descriptors attached to an interactive shell are actually sockets) or
+if you goof up your faucet/hose command and forgot to dup(2) one of
+your descriptors.
+
+<p> <B>Bad file number</B>
+  You gave it a bad file number for <i>fd</i>.  If you have enough
+skill to actually generate this error, you probably know what is
+wrong.
+
+<p> If you encounter any other errors, clue me in.
+
+<h1>SEE ALSO</h1>
+<a href="netpipes.html"> netpipes</a> (1)
+<a href="faucet.html"> faucet</a> (1),
+<a href="hose.html"> hose</a> (1),
+<a href="getpeername.html"> getpeername</a> (1),
+ socket (2),
+ shutdown (2),
+
+<h1>NOTES</h1>
+<p>
+Any normal human would assume a program this simple has to be bug
+free, but I am an experienced programmer.
+
+<p> Just avoid doing anything funky like passing <b>sockdown</b> strings
+and it should serve you well.  You should not have to pass it any
+arguments unless you are doing something fairly funky.
+
+<p> Perhaps I should ditch the <b>shutdown -a</b> semantics on hose since
+a <b>sockdown 1 2</b> would do the job.
+
+<h1>CREDITS</h1>
+
+<p> Ian Stirling <a
+href="mailto:root@mauve.demon.co.uk">&lt;root@mauve.demon.co.uk&gt;</a>,
+for the idea of using this program in /proc on a Linux machine.
+
+<h1>COPYRIGHT</h1>
+Copyright (C) 1995-1998 Robert Forsman
+
+<p> This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+<p> This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+<p> You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+<h1>AUTHOR</h1>
+ Robert Forsman <br>
+ <a href="mailto:thoth@purplefrog.com">thoth@purplefrog.com</a> <br>
+ <a href="http://web.purplefrog.com/">Purple Frog Software</a> <br>
+ <a href="http://web.purplefrog.com/~thoth/">http://web.purplefrog.com/~thoth/</a>

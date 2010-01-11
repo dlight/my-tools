@@ -1,0 +1,161 @@
+.\" $Id: sockdown.html,v 1.4 1998/10/28 16:07:57 thoth Exp $ Copyright 1995 by Robert Forsman
+.TH  SOCKDOWN 1 "July 7, 1998"
+
+.SH NAME
+sockdown \- shutdown(2) a socket
+
+netpipes 4.2
+
+.SH SYNOPSIS
+\fBsockdown\fP
+[ \fIfd\fP
+[\fIhow\fP] ]
+
+.SH DESCRIPTION
+
+\fBsockdown\fP
+performs the shutdown(2) system call on one of its file descriptors
+specified by \fIfd\fP.  The possible values for \fIhow\fP are
+
+.TS H
+|lw(0.4i)|lw(2i)|.
+.TB
+writeonly	convert to write\-only file descriptor
+0	convert to write\-only file descriptor
+writeonly	symbolic for same as above
+1	convert to read\-only file descriptor
+readonly	symbolic for same as above
+2	complete shutdown.  no reads or writes allowed in the future
+totally	symbolic for same as above
+.TE
+
+
+The default \fIfd\fP is 1 (stdout) and the default \fIhow\fP is 1.
+
+.SH EXAMPLES
+
+Imagine you have a machine that can perform a service (in this case
+conversion from ASCII to fancy postscript) :
+
+.nf 
+server$ faucet 3000 \-\-in \-\-out enscript \-2rGhp \-
+.fi
+
+You may then connect to it with a hose.  However, the first example enters deadlock :
+
+.nf 
+client$ hose server 3000 \-in \-out \\
+	sh \-c " cat blah.txt & cat > blah.ps "
+.fi
+
+The enscript blocks waiting for input from the socket because not all
+of the client processes have exited.  While the cat blah.txt is
+finished, the cat > blah.ps is not, and will not be finished until the
+remote enscript process finishes writing.  The enscript process will
+not finish writing until it is finished reading, but that
+client\->server half of the socket is still open and will not be closed
+until all the client processes are done.  The result is deadlock.
+
+So, we use sockdown to close half of the pipe
+
+.nf 
+client$ hose server 3000 \-in \-out \\
+	sh \-c " ( cat blah.txt ; sockdown ) & cat > blah.ps "
+.fi
+
+This way when the cat blah.txt is done, half of the socket is shut
+down and the remote enscript process runs out of input, causing it to
+flush its output and exit, so eventually the whole mess finishes
+cleanly.
+
+Note: the & on the hose is necessary to prevent another deadlock.  If
+we simply used the ; to serialize the two cat processes it is possible
+that the enscript would fill up its write buffer before the first cat
+was done causing both processes to block and preventing the second cat
+from draining the pipe.
+
+Of course, that idiomatic usage of hose is so useful that it is a
+special form:
+
+.nf 
+client$ hose server 3000 \-slave < blah.txt > blah.ps
+.fi
+
+Ian Stirling <root@mauve.demon.co.uk>
+informs me that \fBsockdown\fP can be used in Linux's
+/proc/\fIpid\fP/fd/ directories to tear down hung network
+connections.  I have since used this myself on a wedged MOMspider.  To
+try this, you have to know the PID of the program and the file
+descriptor of the wedged socket (can sometimes be found by running
+\fBstrace\fP and see if the program is stuck in a read(2) system
+call).  If the PID is 991 and the socket's descriptor is 5, you do
+this as root:
+
+.nf 
+bash# sockdown 1 2 > /proc/991/fd/5
+.fi
+
+.SH ERRORS
+\fBSocket operation on non\-socket\fP
+
+\fBInvalid argument (seen on Solaris)\fP
+The \fIfd\fP you specified does not refer to a socket.  This happens
+when you run sockdown by itself (it is unlikely that any of the file
+descriptors attached to an interactive shell are actually sockets) or
+if you goof up your faucet/hose command and forgot to dup(2) one of
+your descriptors.
+
+\fBBad file number\fP
+You gave it a bad file number for \fIfd\fP.  If you have enough
+skill to actually generate this error, you probably know what is
+wrong.
+
+If you encounter any other errors, clue me in.
+
+.SH SEE ALSO
+netpipes (1)
+faucet (1),
+hose (1),
+getpeername (1),
+socket (2),
+shutdown (2),
+
+.SH NOTES
+
+Any normal human would assume a program this simple has to be bug
+free, but I am an experienced programmer.
+
+Just avoid doing anything funky like passing \fBsockdown\fP strings
+and it should serve you well.  You should not have to pass it any
+arguments unless you are doing something fairly funky.
+
+Perhaps I should ditch the \fBshutdown \-a\fP semantics on hose since
+a \fBsockdown 1 2\fP would do the job.
+
+.SH CREDITS
+
+Ian Stirling <root@mauve.demon.co.uk>,
+for the idea of using this program in /proc on a Linux machine.
+
+.SH COPYRIGHT
+Copyright (C) 1995\-1998 Robert Forsman
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+.SH AUTHOR
+Robert Forsman
+ thoth@purplefrog.com
+ Purple Frog Software
+ http://web.purplefrog.com/~thoth/

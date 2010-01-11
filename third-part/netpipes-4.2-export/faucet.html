@@ -1,0 +1,382 @@
+<!-- t
+ $Id: faucet.html,v 1.5 1998/10/28 16:07:57 thoth Exp $
+ Copyright 1992-98 by Robert Forsman
+-->
+<title> FAUCET 1 "October 28, 1998"</title>
+<h1>NAME</h1>
+faucet - a fixture for a BSD network pipe
+
+<p> netpipes 4.2
+
+<h1>SYNOPSIS</h1>
+<b>faucet</b> <i>port</i>
+(<b>--in</b>|<b>--out</b>|<b>--err</b>|<b>--fd</b> <i>n</i>)+
+[<b>--once</b>]
+[<b>--verbose</b>]
+[<b>--quiet</b>]
+[<b>--unix</b>]
+[<b>--foreignhost</b> <i>addr</i>]
+[<b>--foreignport</b> <i>port</i>]
+[<b>--localhost</b> <i>addr</i>]
+[<b>--serial</b>]
+[<b>--daemon</b>]
+[<b>--shutdown</b> (r|w) ]
+[<b>--pidfile</b> <i>filename</i>]
+[<b>--noreuseaddr</b>]
+[<b>--backlog</b> <i>n</i>]
+[<b>-</b>[<b>i</b>][<b>o</b>][<b>e</b>][<b>#</b><i>3</i>[,<i>4</i>[,<i>5</i>...]]][<b>v</b>][<b>1</b>][<b>q</b>][<b>u</b>][<b>d</b>][<b>s</b>]]
+[<b>-p</b> <i>foreign-port</i>]
+[<b>-h</b> <i>foreign-host</i>]
+[<b>-H</b> <i>local-host</i>]
+<i>command</i> <i>args</i>
+
+<h1>DESCRIPTION</h1>
+<p>
+ <B>faucet</B>
+attempts to provide the functionality of pipes over the network.
+It behaves as the server end of a server-client connection.
+When used with
+ <B>hose(1)</B>
+it can function as a replacement for
+<pre>
+tar -cf - . | rsh other "cd destdir; tar -xf -"
+</pre>
+ <B>faucet</B>
+and
+ <B>hose</B>
+are especially useful when you don't have easy non-interactive access
+to the destination account (such as a root account where .rhosts are a
+bad idea).
+
+<p>  <B>faucet</B>
+creates a BSD socket, binds it to the
+ <I>port</I>
+specified on the command line, and listens for connections.
+
+<p> Every time
+ <B>faucet</B>
+gets a connection it exec(2)s <i>command</i> and its <i>args</i> with
+stdin, stdout, stderr, and/or arbitrary file descriptors redirected
+according to the
+ <B>--in --out --err --fd</B> <i>n</i>
+flags.  <b>faucet</b> also automagically shuts down the unused half of
+the connection if only <b>--in</b> is specified or if only <b>--out</b>
+and/or <b>--err</b> are specified.  See the <b>--shutdown</b> option for
+more information.
+
+<h1>OPTIONS</h1>
+<p> If the
+ <B>--once</B>
+flag is specified,
+ <B>faucet</B>
+will exec(2) the
+ <I>command</I>
+instead of fork(2)ing and exec(2)ing.  
+ <B>--once</B>
+means that the network pipe
+is only good for one shot.
+
+<p> The
+ <B>--verbose</B>
+flag specifies that
+ <B>faucet</B>
+should print information about connecting hosts.  This information
+includes the numeric host address, host names, and foreign port numbers.
+The
+ <B>--quiet</B>
+flag specifies that
+ <B>faucet</B>
+should NOT print such info.
+ <B>--quiet</B>
+is the default.
+
+<p> The
+ <B>--unix</B>
+flag specifies that the
+ <I>port</I>
+is not an internet port number or service name, but instead it is a
+file name for a UNIX domain socket.
+
+<p> The <B>--foreignhost</B> option specifies that faucet should
+reject all connections that do not come from the <I>host</I> machine.
+Similarly <B>--foreignport</B> specifies that faucet should reject all
+connections that are not bound on their local machine to the
+<I>port</I> argument.  The above two options allow a crude form of
+authentication.  Note that on UNIX systems only root can bind a socket
+to a port number below 1024.
+
+<p>  <B>Please</B> do not be fooled into thinking this makes faucet
+secure.  There are ways to spoof IP numbers that have been known for
+years (but only publicized recently).  I do think that this method is
+safe from DNS spoofs, but you probably should have  <B>nospoof on</B>
+in /etc/host.conf anyway.
+
+<p>  <B>--localhost</B>
+specifies that the listening socket should be bound to a specific
+internet address on this host.  This is only useful on hosts with
+several internet numbers.
+
+<p>  <B>--daemon</B>
+specifies that the faucet should disassociate from the controlling
+terminal once it has started listening on the socket.  This is done
+using the setsid() system call.  If you don't have setsid on your
+system, it uses the standard ``close all file descriptors, ioctl
+TIOCNOTTY, fork() and parent exit'' sequence.
+
+<p>  <B>--shutdown</B>
+is used to turn the (normally) bi-directional socket into a
+uni-directional one
+  If the `r' is present, then <b>faucet</b> will close half the
+connection to make it a read-only socket.  If we try to write, it will
+fail.  If the remote connection tries to read, it will percieve the
+socket as closed.
+  If instead the `w' is present, then <b>faucet</b> will close the
+other half of the connection to make it a write-only socket.  If we
+try to read, we will percieve the socket as closed.  If the remote
+connection tries to write, it will fail.
+  The default behavior is to leave both halves open, however the
+shutdown of half of the connection is automagically done by certain
+combinations of the <b>--in</b>, <b>--out</b>, and <b>--err</b> flags.
+To suppress their automagic behavior you can use (respectively) --fd 0,
+--fd 1, and --fd 2.
+
+<p> <b>--shutdown</b> may not be used with some internet servers (such
+as certain httpds) because they interpret the closing of one half of
+the connection as a close on the entire connection.  This warning applies to <b>--in</b>, <b>--out</b>, and <b>--err</b>.
+
+<p> <B>--serial</B> causes faucet to wait for one child to finish
+before accepting any more connections.  Serialization is a very crude
+form of critical-section management.
+
+<p> <B>--pidfile</B> <I>filename</I> commands <b>faucet</b> to write
+its process id into <i>filename</i>.  This is useful when faucet is
+part of a larger system and a controlling process might want to kill
+the faucet.  <b>--pidfile</b> functions properly when using the
+<b>--daemon </b> option.
+
+<p> By default, <b>faucet</b> performs a
+
+<pre>
+setsockopt(fd, SOL_SOCKET, SO_REUSEADDR...)
+</pre>
+
+ which prevents the ``Address in use'' problem that ``plagued''
+netpipes versions 4.0 and earlier.  <b>--noreuseaddr</b> tells faucet
+to skip that system call, and revert to pre-4.1 behavior.  Without
+this call, the socket is not always available for immediate reuse
+after the faucet exits.
+
+<p> <b>--backlog</b> <i>n</i> allows you to specify the second
+parameter to the listen(2) system call.  The default is 5.
+
+<h1>SHORT FLAGS</h1>
+To reduce the typing requirements for arguments (and to pay homage to
+the age-old tradition of UNIX cryptotaxonomy) I have added some short
+forms of the flags.  Here is a correspondence chart:
+
+
+<table roffspooge="
+|lw(0.4i)|lw(1.2i)|
+|cBw(0.4i)|lBw(1.2i)|.
+"><tr>
+<th>Short	<th>Long
+<tr><td><b>i</b>	<td><b>in</b>
+<tr><td><b>o</b>	<td><b>out</b>
+<tr><td><b>e</b>	<td><b>err</b>
+<tr><td><b>#</b><i>n</i>	<td><b>fd</b><i>n</i>
+<tr><td><b>v</b>	<td><b>verbose</b>
+<tr><td><b>1</b>	<td><b>once</b>
+<tr><td><b>q</b>	<td><b>quiet</b>
+<tr><td><b>u</b>	<td><b>unix</b>
+<tr><td><b>d</b>	<td><b>daemon</b>
+<tr><td><b>s</b>	<td><b>serial</b>
+<tr><td><b>p</b>	<td><b>foreignport</b>
+<tr><td><b>h</b>	<td><b>foreignhost</b>
+<tr><td><b>H</b>	<td><b>localhost</b>
+</table>
+
+<p>   For example, the following command
+
+<p>
+<pre>
+example$ faucet 3000 --out --verbose --once --foreignhost client echo blah
+</pre>
+
+<p> could be written
+
+<p>
+<pre>
+example$ faucet 3000 -ov1h client echo blah
+</pre>
+
+<p>   The <b>-p</b>, <b>-h</b>, and <b>-H</b> flags take an argument, but
+the flags may be grouped into one argument.  They then grab the arguments
+they need from the command line in the order the flags appear.
+
+<p> <pre>
+example$ faucet 3000 -hpHov1 client 2999 example-le2 echo blah
+</pre>
+
+<p>   Whereas each <b>--fd</b> word flag required an individual descriptor, the
+<b>-#</b> character flag can take multiple descriptors.  The following are
+equivalent:
+
+<p> <pre>
+example$ faucet 3000 --fd 0 --fd 1 --verbose --once echo blah
+example$ faucet 3000 -#0,1v --once echo blah
+example$ faucet 3000 -v1#0,1 echo blah
+example$ faucet 3000 -#0,1v1 echo blah
+</pre>
+
+<p> Note that you have to pay attention when using the <b>-#</b>
+character flag and the <b>-1</b> character flag in the same argument.
+Also, remember the special shutdown(2) semantics of <b>-in</b> and
+<b>-out</b>.
+
+<h1>EXAMPLES</h1>
+
+<p>
+This creates a TCP-IP socket on the local machine bound to port 3000.
+<pre>
+example$ faucet 3000 --out --verbose tar -cf - .
+</pre>
+Every time some process (from any machine) attempts to connect to port
+3000 on this machine the <B>faucet</B> program will fork(2) a process
+and the child will exec(2) a
+<pre>
+tar -cf - .
+</pre>
+The <B>--out</B> option means that the output of the child process
+will have been redirected into the new socket retrieved by the
+accept(2) call.  <B>--verbose</B> means that faucet will print
+information about each new connection.
+
+<p>
+This creates a UNIX domain socket in the current directory
+<pre>
+example$ faucet u-socket --out --err --once --unix csh -c \
+	"dd if=angio.pgm | funky.perl.script" 
+</pre>
+The <B>--out --err</B> option means that stdout and stderr will be
+redirected in the child process.  The <B>--once</B> option means that
+the faucet will not fork(2), but exec(2) the process so that only the
+first process can connect to the u-socket before the faucet becomes
+unavailable.
+
+<p> This example listens on a socket until the first connection comes
+through.  It then spawns a bidirectional copy that is similar to
+<tt>hose -slave</tt>.
+<pre>
+faucet 3000 -1v --fd 3 sh -c 'cat <&3 & cat >&3 ; sockdown 3'
+</pre>
+
+<h1>SEE ALSO</h1>
+<a href="netpipes.html">netpipes</a> (1),
+<a href="hose.html">hose</a> (1),
+<a href="sockdown.html">sockdown</a> (1),
+<a href="getpeername.html">getpeername</a> (1),
+socket (2),
+bind (2),
+listen (2),
+accept (2),
+shutdown (2),
+services (5),
+gethostbyaddr (3)
+
+<h1>BUGS</h1>
+
+<p> There is a problem with almost every OS I have used faucet on.
+Ports are sometimes not recycled swiftly enough.  If you kill one
+faucet and try to start another that wants to listen on the same port
+you will often see pre-4.1 faucets print the following warning over
+and over again:
+
+<p> <pre>
+faucet: Address 3000 in use, sleeping 10.
+faucet: Trying again . . .
+</pre>
+
+<p>   but you won't actually be able to connect(2) to that port (with
+<b>hose</b>(1), for example) because you'll get a ``connection
+refused''.
+
+<p> There was also an experimental Linux kernel that NEVER recycled ports
+(I quickly switched back to my old kernel). 
+
+<p> I have been informed that this is a side-effect of the TCP
+specification and that I should use the SO_REUSEADDR option to work
+around it, so I do.
+
+<h1>NOTES</h1>
+<p>
+  Doubtless there are bugs in this program, especially in the unix domain
+socket portions.  I welcome problem reports and would like to make
+these programs as "clean" (no leftover files, sockets) as possible.
+
+<p> 4.1 added <b>--backlog</b> and <b>--noreuseaddr</b>.  <b>--noreuseaddr</b> reflects the fact that 4.1 also added the SO_REUSEADDR socket option as the default.
+
+<p> 4.0 made the full-word arguments use -- like many GNU programs.
+They are still available with a single - for backward-compatibility.
+
+<p> 3.1 added the single-character flags and the -pidfile option.  It also
+switched to the setsid(2) system call to detach itself from the
+process group for the -daemon flag.  I've been hacking at UNIX for
+years, but there are still some things that I never really learned,
+and others that have been changing.  I need to buy a book.
+
+<p> Release 2.3 added support for multi-homed hosts: hosts with
+multiple internet numbers (such as gateways).  Before this faucet
+assumed that the first internet number that gethostbyname returned was
+the only one.  <B>--foreignhost</B> authentication was weakened by this
+inadequacy so I beefed up the algorithms.  <B>--foreignhost</B> will
+accept a connection from any of the internet numbers associated with
+the host name.
+
+<h1>CREDITS</h1>
+<p>
+Thanks to Steve Clift &lt;<a href="mailto:clift@ml.csiro.au">clift@ml.csiro.au</a>&gt; for SGI (SysV) patches.
+<p>
+Many people complained about the old way of specifying the command.
+Thanks to whoever gave me the alternative which is now implemented.
+It is much better.
+<p>
+Randy Fischer &lt;<a href="mailto:fischer@ucet.ufl.edu">fischer@ucet.ufl.edu</a>&gt; finally prodded me into fixing
+the old lame non-handling of multi-homed host.
+<p>
+Thanks to all who suggested I use setsid() for -daemon mode.
+<p>
+Thanks to the Spring 1996 UF CIS consulting staff
+&lt;<a href="mailto:consult@cis.ufl.edu">consult@cis.ufl.edu</a>&gt; for pointing out the sys_errlist[] declaration
+conflict on FreeBSD.  Sometimes I hate Sun Microsystems.
+<p>
+Thanks to Daniel O'Connor &lt;<a href="mailto:doconnor@adam.ist.flinders.edu.au">doconnor@adam.ist.flinders.edu.au</a>&gt; for
+suggesting the -pidfile flag.
+<p>
+Big thanks to Joe Traister &lt;<a href="mailto:traister@gate.net">traister@gate.net</a>&gt; for his signal handling
+patches, strerror surrogate, and other assorted hacks.
+<p>
+Thanks to Thomas A. Endo &lt;<a href="mailto:tendo@netcom.com">tendo@netcom.com</a>&gt; for dropping an SO_REUSEADDR
+patch in my lap.  Otherwise I wouldn't have gotten to it till 2001.
+
+<h1>COPYRIGHT</h1>
+Copyright (C) 1992-98 Robert Forsman
+
+<p> This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+<p> This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+<p> You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+<h1>AUTHOR</h1>
+ Robert Forsman <br>
+ <a href="mailto:thoth@purplefrog.com">thoth@purplefrog.com</a> <br>
+ <a href="http://web.purplefrog.com/">Purple Frog Software</a> <br>
+ <a href="http://web.purplefrog.com/~thoth/">http://web.purplefrog.com/~thoth/</a>

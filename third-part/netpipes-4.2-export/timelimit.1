@@ -1,0 +1,65 @@
+.\" $Id: timelimit.html,v 1.3 1998/10/28 16:07:57 thoth Exp $
+.\" Copyright 1997-98 by Robert Forsman
+.TH  TIMELIMIT 1 "February 12, 1998"
+
+.SH NAME
+timelimit \- spawn a subprocess and if the child does not finish
+within the time limit either kill it, or exit, leaving the child in
+the background.
+
+netpipes 4.2
+
+.SH SYNOPSIS
+\fBtimelimit\fP
+[ \fB\-v\fP ]
+[ \fB\-nokill\fP ]
+\fItime\fP
+\fIcommand args\fP
+
+.SH DESCRIPTION
+\fBtimelimit\fP is used to limit the amount of foreground wallclock
+time a process consumes.  Once the time limit expires \fBtimelimit\fP
+will kill the process unless \fB\-nokill\fP is specified.
+
+\fB\-v\fP adds some diagnostic messages.
+
+.SH EXAMPLES
+
+.nf timelimit 5m faucet 3000 \-\-out cat time\-sensitive\-info
+.fi
+
+.SH SEE ALSO
+netpipes (1)
+
+.SH BUGS
+
+Find 'em.  Send 'em in.  I'll teach them to gnaw on my code!
+
+.SH CREDITS
+
+Francis Liu <fxl@pulse.itd.uts.edu.au>
+suggested that I modify timelimit so that it doesn't SEGV when invoked
+with no arguments.
+
+.SH COPYRIGHT
+Copyright (C) 1997\-1998 Robert Forsman
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+.SH AUTHOR
+Robert Forsman
+ thoth@purplefrog.com
+ Purple Frog Software
+ http://web.purplefrog.com/~thoth/

@@ -1,0 +1,313 @@
+<!-- t
+$Id: encapsulate.html,v 1.4 1998/10/28 16:07:57 thoth Exp $ 
+Copyright 1997-98 by Robert Forsman
+
+-->
+<title>ENCAPSULATE 1 "June 19, 1997"</title>
+<h1> NAME</h1>
+encapsulate - multiplex several channels over a single socket with
+sampling of remote process exit status, and provide conversation
+termination without closing the socket.
+
+<p> netpipes 4.2
+
+<h1> SYNOPSIS</h1>
+<b>encapsulate</b>
+<b>--fd</b> <i>n</i> 
+[ <b>--verbose</b> ]
+[ <b>--subproc</b> 
+[ <b>--infd</b> <i>n</i>[<b>=</b><i>sid</i>] ]
+[ <b>--outfd</b> <i>n</i>[<b>=</b><i>sid</i>] ]
+[ <b>--duplex</b> <i>n</i>[<b>=</b><i>sid</i>] ]
+[ <b>--Duplex</b> <i>n</i>[<b>=</b><i>sid</i>] ]
+[ <b>--DUPLEX</b> <i>n</i>[<b>=</b><i>sid</i>] ]
+[ <b>--prefer-local</b> ]
+[ <b>--prefer-remote</b> ]
+[ <b>--local-only</b> ]
+[ <b>--remote-only</b> ]
+]
+[ <b>--client</b> ]
+[ <b>--server</b> ]
+<b>-</b>[<b>#</b><i>n</i>][<b>v</b>][<b>s</b>[<b>i</b><i>n</i>][<b>o</b><i>n</i>][<b>d</b><i>n</i>][<b>io</b><i>n</i>][<b>oi</b><i>n</i>][<b>l</b>][<b>r</b>][<b>L</b>][<b>R</b>]]
+<i>command args ...</i>
+
+<h1> DESCRIPTION</h1>
+
+<p> <b>encapsulate </b>
+implements the Session Control Protocol (SCP) in a limited manner.
+<b>encapsulate</b>
+multiplexes several virtual channels over a single socket using SCP.
+<b>encapsulate</b>
+transmits the exit status of the local program to the remote end over
+a reserved SCP channel and receives the remote exit status back.
+<b>encapsulate</b>
+provides conversation boundaries without closing the socket.
+
+<p> Flags may appear in any order.  The first argument that isn't a flag
+is the command to spawn (assuming <b>--subproc</b> is specified, an
+error otherwise).
+
+<h1> OPTIONS</h1>
+
+<p> <b>--fd</b> <i>n</i>, <b>-#</b><i>n</i> : specify the file descriptor
+of the socket we will be multiplexing subprocess channels over.  This
+argument is required
+
+<p> <b>--verbose</b>, <b>-v</b> : Print extra information (including a
+copyright notice) to stderr.
+
+<p> <b>--subproc</b>, <b>-s</b> : spawn a subprocess.  You must supply a
+<i>command</i> and <i>args</i>.  If you omit this flag, then you must
+<b>not</b> supply a <i>command</i> and <i>args</i>.  If you omit this
+flag, <b>encapsulate</b> will copy input from stdin to an outgoing
+channel in the SCP&ndash;muxed socket and copy to stdout from an incoming
+channel in the SCP&ndash;muxed socket.  If you omit this flag, all of the
+input and output channel flags are illegal.
+
+<p> <b>--infd</b> <i>n</i>, <b>-i</b><i>n</i> : specify an input
+channel.  If there is a subprocess, it will be able to read from
+descriptor <i>n</i>.  If there is no subprocess <b>encapsulate</b>
+will read from its descriptor <i>n</i> (these are opposite polarities
+for the SCP channel).
+
+<p> <b>--outfd</b> <i>n</i>, <b>-o</b><i>n</i> : specify an output
+channel.  If there is a subprocess, it will be able to write to
+descriptor <i>n</i>.  If there is no subprocess <b>encapsulate</b>
+will write to its descriptor <i>n</i> (these are opposite polarities
+for the SCP channel).
+
+<p> <b>--duplex</b> <i>n</i>, <b>-io</b><i>n</i> : specify a bidirectional
+channel.  The remote <b>encapsulate</b> will send the SCP SYN packet,
+and the local will respond with a SYN for the same session.  The
+subprocess will be able to read and write to file descriptor <i>n</i>.
+The subprocess should use the <b>sockdown</b>(1) program if it must
+close one direction while leaving the other direction open.
+
+<p> <b>--Duplex</b> <i>n</i>, <b>-d</b><i>n</i> : specify a bidirectional
+channel.  The <b>--client</b> end of the <b>encapsulate</b> connection
+sends the SCP SYN packet and <b>--server</b> responds with a SYN for
+the same session.  The subprocess will be able to read and write to
+file descriptor <i>n</i>.  The subprocess should use the
+<b>sockdown</b>(1) program if it must close one direction while leaving
+the other direction open.
+
+<p> <b>--DUPLEX</b> <i>n</i>, <b>-oi</b><i>n</i> : specify a bidirectional
+channel.  The local <b>encapsulate</b> will send the SCP SYN packet,
+and the remote will respond with a SYN for the same session.  The
+subprocess will be able to read and write to file descriptor <i>n</i>.
+The subprocess should use the <b>sockdown</b>(1) program if it must
+close one direction while leaving the other direction open.
+
+<p> All of the long forms of the bidirectional channel have an
+optional <b>=</b><i>sid</i> component that can be used to specify the
+SCP Session ID.  This is not very useful when connecting encapsulate
+to another instance of itself, but could be handy when connecting to
+another piece of software that implements SCP.
+
+<p> <b>--prefer-local</b>, <b>-l</b> : if both the remote and local
+subprocesses exit with non&ndash;zero (erroneous) codes, <b>encapsulate</b>
+will exit with the same code as the local subprocess.  <b>This is the
+default.</b>
+
+<p> <b>--prefer-remote</b>, <b>-r</b> : if both the remote and local
+subprocesses exit with non&ndash;zero (erroneous) codes, <b>encapsulate</b>
+will exit with the same code as the remote subprocess.
+
+<p> <b>--local-only</b>, <b>-L</b> : <b>encapsulate</b> exits with the
+local status and ignores the remote status.
+
+<p> <b>--remote-only</b>, <b>-R</b> : <b>encapsulate</b> exits with the
+remote status and ignores the local status.
+
+<h1> SESSION IDs AND SUBPROCESS CHANNELS</h1>
+
+<p> When specifying channels for the subprocess, the order of the flags is
+very important.  Every flag to the local <b>encapsulate</b> must have a
+corresponding flag on the remote <b>encapsulate</b> that is in the
+exact same position (in the list of channels).  The descriptor numbers
+need not correspond, but the position and type of each channel must.
+
+<p> A lamentably complicating factor is that the data flow implied by
+<b>--infd</b> and <b>--outfd</b> are different when you specify a
+subprocess.
+
+<table roffspooge="
+lw(2i) lw(2i)
+lw(2i) lw(2i).
+"> <tr>
+<th>Local	<th>Remote
+<tr><td><b>--infd</b> w/subproc		<td><b>--outfd</b> w/subproc
+<tr><td><b>--infd</b> w/subproc		<td><b>--infd</b>
+<tr><td><b>--infd</b>			<td><b>--infd</b> w/subproc
+<tr><td><b>--infd</b>			<td><b>--outfd</b>
+<tr><td><b>--outfd</b> w/subproc	<td><b>--infd</b> w/subproc
+<tr><td><b>--outfd</b> w/subproc	<td><b>--outfd</b>
+<tr><td><b>--outfd</b>			<td><b>--outfd</b> w/subproc
+<tr><td><b>--outfd</b>			<td><b>--infd</b>
+<tr><td><b>--duplex</b>			<td><b>--DUPLEX</b>
+<tr><td><b>--Duplex</b>			<td><b>--Duplex</b>
+<tr><td><b>--DUPLEX</b>			<td><b>--duplex</b>
+</table>
+
+<p>RIGHT:
+
+<pre>
+l$ encapsulate --infd 0 --duplex 5
+r$ encapsulate --outfd 1 --DUPLEX 5
+</pre>
+
+WRONG:
+
+<pre>
+l$ encapsulate --infd 0 --duplex 5
+r$ encapsulate --outfd 1 --duplex 5
+</pre>
+
+<p>   <b>--duplex</b> must have a corresponding <b>--DUPLEX</b> on the
+remote end.
+
+<pre>
+l$ encapsulate --infd 0 --duplex 5
+r$ encapsulate --DUPLEX 5 --outfd 1
+</pre>
+
+<p>   <b>--infd</b> must have a corresponding <b>--outfd</b> on the remote
+end.  It's out of order and the channels will be allocated incorrectly
+leading to protocol errors.
+
+<p>   If you understand the source code for <b>encapsulate</b>, you can
+violate these guidelines, but it is unnecessary, error&ndash;prone, and
+ill&ndash;advised; besides, you don't really understand the source code.
+Don't do it.
+
+<h1> CLIENT -VS- SERVER</h1>
+
+<p>   The SCP has an implicit polarity.  One end is the server and the
+other end is the client.  You can specify which end is which using
+<b>--client</b> and <b>--server</b>.  If you do not specify one, then
+<b>encapsulate</b> will compare the addresses of both ends of the
+socket (specified with <b>--fd</b>) and use a deterministic algorithm
+to pick one to be the server and one to be the client.  If the remote
+address of the socket does not correspond to the remote
+<b>encapsulate</b> (e.g. the packets are being forwarded through a
+plugged gateway, the addresses are being masqueraded, or are otherwise
+percieved inconsistently by the two ends) then this algorithm has a
+good chance of "failing" and assigning both to be server or both to be
+client.
+
+<p>   The only time you should ever let <b>encapsulate</b> choose between
+client and server is in interactive situations.  It is very likely
+that a software system built around <b>encapsulate</b> will be reused
+in a situation where the automatic polarity assignment fails.
+
+<h1> EXAMPLES</h1>
+
+<p>   Here's a simple file transfer daemon:
+
+<pre>
+server$ faucet 3001 --once --fd3 \
+     sh -c 'while ~/src/netpipes4.0/encapsulate --fd 3 -so5i4 \
+                sh -c "fname=`cat 0&lt;&amp;4`; echo \$fname; cat &lt; \$fname 1&gt;&amp;5"; \
+                do true; done'
+client$ hose server 3001 --retry 10 --delay 1 --fd3 \
+        sh -c 'while read fname; do \
+                ~/src/netpipes4.0/encapsulate --fd 3 -si4o5 \
+                        sh -c "echo $fname 1&gt;&amp;5; exec 5&gt;&amp;-; cat 0&lt;&amp;4" \
+                || break; done'
+</pre>
+
+<p>   Just type the name of the file you want to retrieve into the hose
+and press return.  It will be dumped to stdout.  Repeat until
+enlightened or bored.
+
+<h1> TROUBLESHOOTING</h1>
+
+<p>   Did you specify <b>--client</b> and <b>--server</b> properly?  One
+side should be server, the other side should be client.  If you
+specify them both as server or both as client, you have made a
+mistake.  Do not rely on the automatic polarity detection.  While it
+is theoretically a very good algorithm, it is fooled very easily.
+
+<p>   Do all of your channel assignments (<b>--infd</b> et al) match up?
+If you get these wrong, <b>encapsulate</b> will freak out and drip
+spooge all over your shoes.
+
+<p>   For deadlock avoidance, make sure you are closing channels when you
+don't need them anymore.  Use the &gt;&amp;- redirection operator in sh or
+bash.  Make sure you close it in all of the background processes as
+well.
+
+<p> Unable to read stdin from a process that has been backgrounded
+with &amp;&nbsp;?  Bash closes file descriptor 0 for any subprocess
+that is backgrounded (e.g. <tt>(command&amp;)</tt> ).  You can get around
+this by copying 0 onto another descriptor, and then copying it back
+within the backgrounded process.
+
+<pre>
+( ( cat 0&lt;&amp;3 ) &amp; ) 3&lt;&amp;0
+</pre>
+
+<h1>SEE ALSO</h1>
+<a href="netpipes.html">netpipes</a> (1),
+<a href="http://sunsite.unc.edu/ses/scp.html">http://sunsite.unc.edu/ses/scp.html</a>
+
+<p> The Session Control Protocol document on SunSite was a draft.
+There is a more recent one that doesn't specify header compression
+(which I don't use anyway).  It may eventually become an RFC.  Then
+again, encapsulate may be the only program which ever implements SCP.
+
+<h1> BUGS</h1>
+
+<p>   <b>encapsulate</b> is not hard to deadlock.  Until I add unbounded
+buffering inside encapsulate, avoid constructing deadlock-vulnerable
+systems.
+
+<p> The <b>encapsulate</b> included with netpipes 4.0 totally failed
+to handle the case where no subprocess was specified.  No error
+message would be issued, and the program would do absolutely nothing.
+The 4.1 version should work.
+
+<p>   <b>encapsulate</b> has no other known bugs.  I'm sure there are
+unknown ones because this software is not yet mature; in fact, it's
+totally wet behind the ears.  Break it and send me the pieces.
+
+<p>   Well, the command-line argument style is inconsistent with faucet &amp;
+hose.  I'll be updating faucet &amp; hose.
+
+<p> The Linux kernel from the beginning of time up through version
+2.0.29 has a problem with sockets being shut down "too fast".  This
+results in loss of data at the end of a stream and an "Error:
+connection reset by peer" during reads.  2.0.30 supposedly fixes this.
+This state machine flaw is very likely present in many other OSes,
+because the strange conditions that exercise it are almost nonexistent
+in normal applications, but happen all the time in some applications
+of the NetPipes package.  <b>encapsulate</b> can be used to work
+around this bug in some cases because encapsulate does not perform a
+shutdown on the network socket ever (it doesn't even do a "close").
+
+<h1>CREDITS</h1>
+
+<p> Hi Mom!  Hi Dad!
+
+<h1>COPYRIGHT</h1>
+Copyright (C) 1997-98 Robert Forsman
+
+<p> This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+<p> This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+<p> You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+<h1>AUTHOR</h1>
+ Robert Forsman<br>
+ <a href="mailto:thoth@purplefrog.com">thoth@purplefrog.com</a><br>
+ <a href="http://web.purplefrog.com/">Purple Frog Software</a><br>
+ <a href="http://web.purplefrog.com/~thoth/">http://web.purplefrog.com/~thoth/</a><br>
