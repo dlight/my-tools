@@ -89,6 +89,6 @@ keys
 git clone git@github.com:dlight/hydra-mud.git ~/e/hydra-mud
 git clone git@github.com:dlight/my-tools.git ~/e/my-tools
 
-cp ~/e/bin/rs-update ~/bin/rs-update
+cp ~/e/my-tools/bin/rs-update ~/bin/rs-update
 
-rs-update
+~/bin/rs-update
