@@ -1,2 +1,2 @@
-all : 
-	git commit -m 'I am too lazy to write a commit msg'
+all :
+	git commit -A -m 'I am too lazy to write a commit msg'
