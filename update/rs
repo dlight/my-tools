@@ -1,62 +1,22 @@
 #!/bin/bash
 
-# rs rs rs
-
-exec_or_debug=$(test "$1" == "-d" && echo echo)
-do="$exec_or_debug sudo"
-
-to() {
-	f=$1; shift
-	$do bash -c "echo $@ > $f"
-}
-
-addkey() {
-	$do apt-key adv --keyserver keyserver.ubuntu.com \
-		--recv-keys $1
-}
-
-apt() {
-	$do apt-get update
-	$do apt-get $@
-	$do rm /var/cache/apt/archives/*.deb
-}
-
-g-clone() {
-	git config --global push.default current
-	git config --global user.name 'Elias Gabriel Amaral da Silva'
-	git config --global user.email 'tolkiendili@gmail.com'
-
-	git clone git@github.com:dlight/hydra-mud.git ~/e/hydra-mud
-	git clone git@github.com:dlight/my-tools.git ~/e/my-tools
-}
-
-# --
-
-mkdir -p ~/etc ~/bin ~/e/hydra-mud ~/e/my-tools
-
-$do ntpdate ntp.cais.rnp.br
-
-to /etc/apt/sources.list.d/rs.list \
-	deb http://ppa.launchpad.net/chromium-daily/ppa/ubuntu karmic main
-
-to ~/etc/apt-get \
-	git-core autoconf \
-	manpages-posix-dev \
-	vim \
-	ucspi-tcp \
-	chromium-browser flashplugin-installer \
-	mplayer \
-	xchat pidgin
-
-addkey 4E5E17B5
-
-apt -y install $(< ~/etc/apt-get)
-
-# arg..
+keys() {
 
 cat > ~/.ssh/known_hosts <<rsrs
-|1|e0SnpjtDREuAKayH5AGkr/OTAZs=|rgrpf3x7ed8BSaFSkuYKvw6aARE= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
-|1|XPVIWkRz0TOBdGV+dAIAmPt7E+8=|sWmwWBW64jyq5wxIeoNqHIhKjLs= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
+|1|e0SnpjtDREuAKayH5AGkr/OTAZs=|rgrpf3x7ed8BSaFSkuYKvw6aARE= \
+ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQ\
+a+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfj\
+IJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84Kezm\
+D5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmp\
+aaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G\
+3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
+|1|XPVIWkRz0TOBdGV+dAIAmPt7E+8=|sWmwWBW64jyq5wxIeoNqHIhKjLs= \
+ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQ\
+a+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfj\
+IJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84Kezm\
+D5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmp\
+aaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G\
+3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
 rsrs
 
 cat > ~/.ssh/id_rsa <<rsrs
@@ -95,39 +55,40 @@ rsrs
 chmod 600 ~/.ssh/id_rsa
 
 cat > ~/.ssh/id_rsa.pub <<rsrs
-UHKWOct1rWND/OXQosPiJElbWk1DEHimP3fDwcOQ1WjFnvsUIoKNDvpdag+KTGP5efEETR+taDNx6aMBnp/pAMsTFSiSd9YqFYqte+4JhZCX1xHvkPwvkhp6XUmsEebRCmb//xhBwzafEBMdsHrI5No1dfVXfPoRnVSfhmzW5eYlNqPqUh4zxMSCiYWBffsBj4G5SeDB/ajdKDKx843l8HKvG401rqv9qruRc4OTCKcYPsLYpqhRvAJn1yqlfIMJbEqw4hOzj/sX+Wn7qPQ0pwqrvPYisDE2pz5XNuRi9w== tolkiendili@gmail.com
+UHKWOct1rWND/OXQosPiJElbWk1DEHimP3fDwcOQ1WjFnvsUIoKNDvpdag+KTGP5\
+efEETR+taDNx6aMBnp/pAMsTFSiSd9YqFYqte+4JhZCX1xHvkPwvkhp6XUmsEebR\
+Cmb//xhBwzafEBMdsHrI5No1dfVXfPoRnVSfhmzW5eYlNqPqUh4zxMSCiYWBffsB\
+j4G5SeDB/ajdKDKx843l8HKvG401rqv9qruRc4OTCKcYPsLYpqhRvAJn1yqlfIMJ\
+bEqw4hOzj/sX+Wn7qPQ0pwqrvPYisDE2pz5XNuRi9w== tolkiendili@gmail.com
 rsrs
 
-cat > ~/.bashrc <<rsrs
-alias egrep='egrep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias grep='grep --color=auto'
-alias ls='ls --color=auto'
-
-export PATH=~/bin:\$PATH
-
-PS1='\[\e[35m\]\W\[\e[m\] \$ '
-SSH_ENV="\$HOME/.ssh/environment"
-
-function start_agent {
-  #echo "Initializing new SSH agent..."
-  /usr/bin/ssh-agent | sed 's/^echo/#echo/' > "\${SSH_ENV}"
-  #echo succeeded
-  chmod 600 "\${SSH_ENV}"
-  . "\${SSH_ENV}" > /dev/null
-  /usr/bin/ssh-add;
 }
 
-# Source SSH settings, if applicable
-if [ -f "\${SSH_ENV}" ]; then
-  . "\${SSH_ENV}" > /dev/null
-  #ps \${SSH_AGENT_PID} doesn't work under cywgin
-  ps -ef | grep \${SSH_AGENT_PID} | grep ssh-agent$ > /dev/null || {
-    start_agent;
-  }
-else
-  start_agent;
-fi
-rsrs
 
-g-clone
+mkdir -p ~/bin ~/etc ~/e
+
+sudo ntpdate ntp.cais.rnp.br
+
+# chromium-daily ppa
+
+sudo bash -c "echo deb http://ppa.launchpad.net/chromium-daily/ppa/ubuntu \
+	karmic main > /etc/apt/sources.list.d/rs.list"
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4E5E17B5
+sudo apt-get update
+
+# git is needed for bootstrap
+
+sudo apt-get install git-core
+
+git config --global push.default current
+git config --global user.name 'Elias Gabriel Amaral da Silva'
+git config --global user.email 'tolkiendili@gmail.com'
+
+keys
+
+git clone git@github.com:dlight/hydra-mud.git ~/e/hydra-mud
+git clone git@github.com:dlight/my-tools.git ~/e/my-tools
+
+cp ~/e/my-tools/update-rs ~/bin/rs-update
+
+rs-update

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+d=~/e/my-tools
+
+cp $d/etc/bashrc ~/.bashrc
+
+cp $d/bin/* ~/bin

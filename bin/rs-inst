@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# trick: rs-inst '*'
+
+sudo apt-get install $(cat ~/e/my-tools/etc/pack/$1)
