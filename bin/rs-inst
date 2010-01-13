@@ -2,4 +2,6 @@
 
 # trick: rs-inst '*'
 
-sudo apt-get install $(cat ~/e/my-tools/etc/pack/$1)
+cd ~/e/my-tools/etc/pack
+
+sudo apt-get install $(cat $@)
