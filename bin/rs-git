@@ -1,0 +1,8 @@
+#!/bin/bash
+
+[ -n "$*" ] && m="$*" || m='I am too lazy to write a msg'
+
+git add -Av
+git commit -m "$m"
+git push
+
