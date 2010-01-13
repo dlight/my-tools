@@ -5,3 +5,5 @@
 cd ~/e/my-tools/etc/pack
 
 sudo apt-get install $(cat $@)
+
+sudo rm /var/cache/apt/archives/*.deb
