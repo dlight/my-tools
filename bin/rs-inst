@@ -4,6 +4,6 @@
 
 cd ~/e/my-tools/etc/pack
 
-sudo apt-get -y install $(cat $@)
+sudo apt-get --force-yes -y install $(cat $@)
 
 sudo rm /var/cache/apt/archives/*.deb
