@@ -5,3 +5,7 @@ d=~/e/my-tools
 cp $d/etc/bashrc ~/.bashrc
 
 cp $d/bin/* ~/bin
+
+mkdir -p ~/.xchat2
+
+cp ~/e/my-tools/etc/servlist_.conf ~/.xchat2

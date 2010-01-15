@@ -2,7 +2,14 @@
 
 cat > down.it <<eof
 #!/bin/bash
-cat \$0 | sed -r ‘/^(#|cat)/d’ | wget -c -i -; exit 0
+cat \$0 | sed -r "/^(#|cat)/d" | wget -c -i -; exit 0
 
 # $(date)
+
+
 eof
+vim.tiny down.it
+
+chmod +x down.it
+
+./down.it
