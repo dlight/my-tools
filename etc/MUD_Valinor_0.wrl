@@ -55,13 +55,13 @@
   <confirm-delete confirm="1" />
   <plugin-items show="0" />
   <macros>
-    <macro name="e" enabled="1">
-      <key>&lt;Mod2&gt;KP_4</key>
-      <action>e</action>
-    </macro>
     <macro name="w" enabled="1">
-      <key>&lt;Mod2&gt;KP_6</key>
+      <key>&lt;Mod2&gt;KP_4</key>
       <action>w</action>
+    </macro>
+    <macro name="e" enabled="1">
+      <key>&lt;Mod2&gt;KP_6</key>
+      <action>e</action>
     </macro>
     <macro name="n" enabled="1">
       <key>&lt;Mod2&gt;KP_8</key>
