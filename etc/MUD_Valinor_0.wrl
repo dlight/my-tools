@@ -107,6 +107,14 @@
       <key>&lt;Mod2&gt;KP_0</key>
       <action>l</action>
     </macro>
+    <macro name="open d" enabled="1">
+      <key>&lt;Control&gt;&lt;Mod2&gt;KP_Subtract</key>
+      <action>open d</action>
+    </macro>
+    <macro name="open n" enabled="1">
+      <key>&lt;Control&gt;&lt;Mod2&gt;KP_8</key>
+      <action>open n</action>
+    </macro>
   </macros>
   <hooksv2>
   </hooksv2>
