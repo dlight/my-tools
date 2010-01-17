@@ -20,29 +20,29 @@
     <defbackcolor>0 65535 65535 65535</defbackcolor>
     <defboldcolor>0 0 0 0</defboldcolor>
     <defboldbackcolor>0 65535 65535 65535</defboldbackcolor>
-    <ansicolor>0 21845 22359 21331</ansicolor>
+    <ansicolor>0 61166 61166 60652</ansicolor>
     <ansicolor>1 61423 10537 10537</ansicolor>
     <ansicolor>2 35466 58082 13364</ansicolor>
-    <ansicolor>3 64764 59881 20303</ansicolor>
+    <ansicolor>3 53540 50205 23174</ansicolor>
     <ansicolor>4 29298 40863 53199</ansicolor>
     <ansicolor>5 44461 32639 43176</ansicolor>
     <ansicolor>6 13364 58082 58082</ansicolor>
-    <ansicolor>7 48830 48830 48830</ansicolor>
-    <ansicolor>8 11822 13364 13878</ansicolor>
+    <ansicolor>7 21845 22359 21331</ansicolor>
+    <ansicolor>8 54227 55255 53199</ansicolor>
     <ansicolor>9 52428 0 0</ansicolor>
     <ansicolor>10 20046 39578 1542</ansicolor>
     <ansicolor>11 50372 41120 0</ansicolor>
     <ansicolor>12 13364 25957 42148</ansicolor>
     <ansicolor>13 30069 20560 31611</ansicolor>
     <ansicolor>14 1542 38944 39578</ansicolor>
-    <ansicolor>15 65535 65535 65535</ansicolor>
+    <ansicolor>15 11822 13364 13878</ansicolor>
   </display>
   <repeat-commands enabled="0" />
   <command-echo enabled="1" />
   <never-hide-input enabled="0" />
-  <store-commands enabled="1" />
+  <store-commands enabled="0" />
   <command-history size="50" />
-  <auto-completion enabled="1" minprefix="3" />
+  <auto-completion enabled="0" minprefix="3" />
   <command-separator separator="%;" />
   <input-lines size="1" save="2" />
   <input-spell active="1" />
