@@ -103,6 +103,10 @@
       <key>&lt;Mod2&gt;KP_Decimal</key>
       <action>exits</action>
     </macro>
+    <macro name="mapa" enabled="1">
+      <key>&lt;Mod2&gt;KP_Divide</key>
+      <action>mapa</action>
+    </macro>
   </macros>
   <hooksv2>
   </hooksv2>
