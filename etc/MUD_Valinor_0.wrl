@@ -54,6 +54,56 @@
   </log>
   <confirm-delete confirm="1" />
   <plugin-items show="0" />
+  <macros>
+    <macro name="e" enabled="1">
+      <key>&lt;Mod2&gt;KP_4</key>
+      <action>e</action>
+    </macro>
+    <macro name="w" enabled="1">
+      <key>&lt;Mod2&gt;KP_6</key>
+      <action>w</action>
+    </macro>
+    <macro name="n" enabled="1">
+      <key>&lt;Mod2&gt;KP_8</key>
+      <action>n</action>
+    </macro>
+    <macro name="s" enabled="1">
+      <key>&lt;Mod2&gt;KP_2</key>
+      <action>s</action>
+    </macro>
+    <macro name="nw" enabled="1">
+      <key>&lt;Mod2&gt;KP_7</key>
+      <action>nw</action>
+    </macro>
+    <macro name="sw" enabled="1">
+      <key>&lt;Mod2&gt;KP_1</key>
+      <action>sw</action>
+    </macro>
+    <macro name="ne" enabled="1">
+      <key>&lt;Mod2&gt;KP_9</key>
+      <action>ne</action>
+    </macro>
+    <macro name="se" enabled="1">
+      <key>&lt;Mod2&gt;KP_3</key>
+      <action>se</action>
+    </macro>
+    <macro name="u" enabled="1">
+      <key>&lt;Mod2&gt;KP_Add</key>
+      <action>u</action>
+    </macro>
+    <macro name="d" enabled="1">
+      <key>&lt;Mod2&gt;KP_Subtract</key>
+      <action>d</action>
+    </macro>
+    <macro name="l" enabled="1">
+      <key>&lt;Mod2&gt;KP_5</key>
+      <action>l</action>
+    </macro>
+    <macro name="exits" enabled="1">
+      <key>&lt;Mod2&gt;KP_Decimal</key>
+      <action>exits</action>
+    </macro>
+  </macros>
   <hooksv2>
   </hooksv2>
   <protocols>
