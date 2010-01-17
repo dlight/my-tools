@@ -107,6 +107,10 @@
       <key>&lt;Mod2&gt;KP_Divide</key>
       <action>mapa</action>
     </macro>
+    <macro name="loo" enabled="1">
+      <key>&lt;Mod2&gt;KP_0</key>
+      <action>l</action>
+    </macro>
   </macros>
   <hooksv2>
   </hooksv2>
