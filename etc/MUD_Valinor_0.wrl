@@ -95,19 +95,15 @@
       <key>&lt;Mod2&gt;KP_Subtract</key>
       <action>d</action>
     </macro>
-    <macro name="l" enabled="1">
-      <key>&lt;Mod2&gt;KP_5</key>
-      <action>l</action>
-    </macro>
     <macro name="exits" enabled="1">
-      <key>&lt;Mod2&gt;KP_Decimal</key>
+      <key>&lt;Mod2&gt;KP_5</key>
       <action>exits</action>
     </macro>
     <macro name="mapa" enabled="1">
       <key>&lt;Mod2&gt;KP_Divide</key>
       <action>mapa</action>
     </macro>
-    <macro name="loo" enabled="1">
+    <macro name="l" enabled="1">
       <key>&lt;Mod2&gt;KP_0</key>
       <action>l</action>
     </macro>
