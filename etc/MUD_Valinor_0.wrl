@@ -115,6 +115,10 @@
       <key>&lt;Control&gt;&lt;Mod2&gt;KP_8</key>
       <action>open n</action>
     </macro>
+    <macro name="i" enabled="1">
+      <key>&lt;Mod2&gt;KP_Decimal</key>
+      <action>i</action>
+    </macro>
   </macros>
   <hooksv2>
   </hooksv2>
