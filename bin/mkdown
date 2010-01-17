@@ -1,6 +1,8 @@
 #!/bin/bash
 
-cat > down.it <<eof
+if [ -n "$1" ]; then d=$1; else d=down.it; fi
+
+cat > $d <<eof
 #!/bin/bash
 cat \$0 | sed -r "/^(#|cat)/d" | wget -c -i -; exit 0
 
@@ -8,8 +10,8 @@ cat \$0 | sed -r "/^(#|cat)/d" | wget -c -i -; exit 0
 
 
 eof
-vim.tiny down.it
+vim.tiny $d
 
-chmod +x down.it
+chmod +x $d
 
-./down.it
+./$d
