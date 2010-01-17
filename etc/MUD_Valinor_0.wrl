@@ -107,17 +107,25 @@
       <key>&lt;Mod2&gt;KP_0</key>
       <action>l</action>
     </macro>
-    <macro name="open d" enabled="1">
-      <key>&lt;Control&gt;&lt;Mod2&gt;KP_Subtract</key>
-      <action>open d</action>
+    <macro name="i" enabled="1">
+      <key>&lt;Mod2&gt;KP_Decimal</key>
+      <action>i</action>
     </macro>
     <macro name="open n" enabled="1">
       <key>&lt;Control&gt;&lt;Mod2&gt;KP_8</key>
       <action>open n</action>
     </macro>
-    <macro name="i" enabled="1">
-      <key>&lt;Mod2&gt;KP_Decimal</key>
-      <action>i</action>
+    <macro name="open s" enabled="1">
+      <key>&lt;Control&gt;&lt;Mod2&gt;KP_2</key>
+      <action>open s</action>
+    </macro>
+    <macro name="open u" enabled="1">
+      <key>&lt;Control&gt;&lt;Mod2&gt;KP_Add</key>
+      <action>open u</action>
+    </macro>
+    <macro name="open d" enabled="1">
+      <key>&lt;Control&gt;&lt;Mod2&gt;KP_Subtract</key>
+      <action>open d</action>
     </macro>
   </macros>
   <hooksv2>
