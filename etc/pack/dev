@@ -1,6 +1,6 @@
 git-core autoconf
 
-manpages-posix-dev
+#disabled-manpages-posix-dev
 
 vim
 
