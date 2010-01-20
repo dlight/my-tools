@@ -1,7 +1,5 @@
 git-core autoconf
 
-#disabled-manpages-posix-dev
-
 vim
 
 ucspi-tcp

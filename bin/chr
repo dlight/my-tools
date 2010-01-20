@@ -3,4 +3,4 @@
 rm -rf ~/.cache
 rm -rf ~/.config/chromium
 
-chromium-browser
+chromium-browser --disk-cache-size=0
