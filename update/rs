@@ -74,6 +74,13 @@ sudo ntpdate ntp.cais.rnp.br
 sudo bash -c "echo deb http://ppa.launchpad.net/chromium-daily/ppa/ubuntu \
 	karmic main > /etc/apt/sources.list.d/rs.list"
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4E5E17B5
+
+sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com \
+     67265eb522bdd6b1c69e66ed7fb8bee0a1f196a8
+echo deb http://ppa.launchpad.net/pidgin-developers/ppa/ubuntu \
+     `lsb_release --short --codename` main | \
+    sudo tee /etc/apt/sources.list.d/pidgin-ppa.list
+
 sudo apt-get update
 
 # git is needed for bootstrap
