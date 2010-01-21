@@ -65,18 +65,23 @@ rsrs
 }
 
 
-mkdir -p ~/bin ~/etc ~/e
+mkdir -p ~/e
 
 sudo ntpdate ntp.cais.rnp.br
 
 # chromium-daily ppa
 
-sudo bash -c "echo deb http://ppa.launchpad.net/chromium-daily/ppa/ubuntu \
-	karmic main > /etc/apt/sources.list.d/rs.list"
+sudo sed -i 's/^deb-src/#&/' /etc/apt/sources.list
+
+echo deb http://ppa.launchpad.net/chromium-daily/ppa/ubuntu \
+	`lsb_release --short --codename` main | \
+	sudo tee /etc/apt/sources.list.d/chromium.list
+
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4E5E17B5
 
 sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com \
      67265eb522bdd6b1c69e66ed7fb8bee0a1f196a8
+
 echo deb http://ppa.launchpad.net/pidgin-developers/ppa/ubuntu \
      `lsb_release --short --codename` main | \
     sudo tee /etc/apt/sources.list.d/pidgin-ppa.list
@@ -85,7 +90,7 @@ sudo apt-get update
 
 # git is needed for bootstrap
 
-sudo apt-get install git-core
+sudo apt-get -y install git-core
 
 git config --global push.default current
 git config --global user.name 'Elias Gabriel Amaral da Silva'
@@ -93,9 +98,31 @@ git config --global user.email 'tolkiendili@gmail.com'
 
 keys
 
+# pequena duplicacao..
+
+SSH_ENV="$HOME/.ssh/environment"
+
+function start_agent {
+  #echo "Initializing new SSH agent..."
+  /usr/bin/ssh-agent | sed 's/^echo/#echo/' > "${SSH_ENV}"
+  #echo succeeded
+  chmod 600 "${SSH_ENV}"
+  . "${SSH_ENV}" > /dev/null
+  /usr/bin/ssh-add;
+}
+
+# Source SSH settings, if applicable
+if [ -f "${SSH_ENV}" ]; then
+  . "${SSH_ENV}" > /dev/null
+  #ps ${SSH_AGENT_PID} doesn't work under cywgin
+  ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ > /dev/null || {
+    start_agent;
+  }
+else
+  start_agent;
+fi
+
 git clone git@github.com:dlight/hydra-mud.git ~/e/hydra-mud
 git clone git@github.com:dlight/my-tools.git ~/e/my-tools
 
-cp ~/e/my-tools/bin/rs-update ~/bin/rs-update
-
-~/bin/rs-update
+~/e/my-tools/bin/rs-update

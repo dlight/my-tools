@@ -2,10 +2,9 @@
 
 d=~/e/my-tools
 
-cp $d/etc/bashrc ~/.bashrc
+ln -fs $d/etc/bashrc ~/.bashrc
 
-cp $d/bin/* ~/bin
+ln -fs $d/bin ~/bin
 
-mkdir -p ~/.xchat2
-
-cp ~/e/my-tools/etc/servlist_.conf ~/.xchat2
+mkdir -p ~/.kildclient
+ln -fs $d/etc/MUD_Valinor_0.wrl ~/.kildclient/MUD_Valinor_0.wrl
