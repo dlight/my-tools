@@ -2,9 +2,9 @@
 
 d=~/e/my-tools
 
-ln -fs $d/etc/bashrc ~/.bashrc
+ln -fns $d/etc/bashrc ~/.bashrc
 
-ln -fs $d/bin ~/bin
+ln -fns $d/bin ~/bin
 
 mkdir -p ~/.kildclient
-ln -fs $d/etc/MUD_Valinor_0.wrl ~/.kildclient/MUD_Valinor_0.wrl
+ln -fns $d/etc/MUD_Valinor_0.wrl ~/.kildclient/MUD_Valinor_0.wrl
