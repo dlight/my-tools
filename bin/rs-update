@@ -13,11 +13,11 @@ ln -fns $c/MUD_Valinor_0.wrl ~/.kildclient/MUD_Valinor_0.wrl
 
 rm -rf ~/.gconf ~/.gconfd ~/.gnome2
 
-mkdir -p ~/.gconf ~/.gconfd ~/.gnome2
-cp -rv $c/gconf/* ~/.gconf/
-cp -rv $c/gconfd/* ~/.gconfd/
-cp -rv $c/gnome2/* ~/.gnome2/
+#mkdir -p ~/.gconf ~/.gconfd ~/.gnome2
+#cp -rv $c/gconf/* ~/.gconf/
+#cp -rv $c/gconfd/* ~/.gconfd/
+#cp -rv $c/gnome2/* ~/.gnome2/
 
-#ln -fns $c/gconf ~/.gconf
-#ln -fns $c/gconfd ~/.gconfd
-#ln -fns $c/gnome2 ~/.gnome2
+ln -fns $c/gconf ~/.gconf
+ln -fns $c/gconfd ~/.gconfd
+ln -fns $c/gnome2 ~/.gnome2

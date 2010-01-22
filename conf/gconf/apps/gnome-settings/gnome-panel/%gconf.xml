@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <gconf>
-	<entry name="history-gnome-run" mtime="1264195362" type="list" ltype="string">
+	<entry name="history-gnome-run" mtime="1264195456" type="list" ltype="string">
 		<li type="string">
 			<stringvalue>gedit</stringvalue>
 		</li>
