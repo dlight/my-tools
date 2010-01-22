@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<gconf>
+	<entry name="history-panel-drawer-icon" mtime="1264191527" type="list" ltype="string">
+		<li type="string">
+			<stringvalue>/usr/share/pixmaps</stringvalue>
+		</li>
+	</entry>
+	<entry name="history-desktop-icon" mtime="1264191405" type="list" ltype="string">
+		<li type="string">
+			<stringvalue>chromium-browser</stringvalue>
+		</li>
+		<li type="string">
+			<stringvalue>/usr/share/icons/hicolor/24x24/apps</stringvalue>
+		</li>
+		<li type="string">
+			<stringvalue>/usr/share/icons/hicolor/16x16/apps</stringvalue>
+		</li>
+		<li type="string">
+			<stringvalue>/usr/share/icons/hicolor/16x16</stringvalue>
+		</li>
+		<li type="string">
+			<stringvalue>/usr/share/icons/hicolor/scalable/apps</stringvalue>
+		</li>
+		<li type="string">
+			<stringvalue>/usr/share/icons/hicolor/scalable/apps/gnome-panel-launcher.svg</stringvalue>
+		</li>
+		<li type="string">
+			<stringvalue>/usr/share/icons/default</stringvalue>
+		</li>
+		<li type="string">
+			<stringvalue>/usr/share/icons/</stringvalue>
+		</li>
+	</entry>
+</gconf>

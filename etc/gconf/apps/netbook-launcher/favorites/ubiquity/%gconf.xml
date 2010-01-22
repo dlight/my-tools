@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<gconf>
+	<entry name="desktop_file" mtime="1264190311" type="string">
+		<stringvalue>/usr/share/applications/ubiquity-gtkui.desktop</stringvalue>
+	</entry>
+	<entry name="type" mtime="1264190311" type="string">
+		<stringvalue>application</stringvalue>
+	</entry>
+</gconf>

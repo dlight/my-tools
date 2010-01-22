@@ -8,3 +8,7 @@ ln -fns $d/bin ~/bin
 
 mkdir -p ~/.kildclient
 ln -fns $d/etc/MUD_Valinor_0.wrl ~/.kildclient/MUD_Valinor_0.wrl
+
+ln -fns $d/etc/gconf ~/.gconf
+ln -fns $d/etc/gconfd ~/.gconfd
+ln -fns $d/etc/gnome2 ~/.gnome2

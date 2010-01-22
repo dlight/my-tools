@@ -1,0 +1,180 @@
+<?xml version="1.0"?>
+<!DOCTYPE wallpapers SYSTEM "gnome-wp-list.dtd">
+<wallpapers>
+  <wallpaper deleted="false">
+    <name>Naranja</name>
+    <filename>/usr/share/backgrounds/Naranja.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#959597979696</pcolor>
+    <scolor>#959597979696</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Misty Morning</name>
+    <filename>/usr/share/backgrounds/MistyMorning.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#9090a7a7b9b9</pcolor>
+    <scolor>#9090a7a7b9b9</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Climbing.jpg</name>
+    <filename>/usr/share/backgrounds/Climbing.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#00005454c9c9</pcolor>
+    <scolor>#00005454c9c9</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Palmengarten</name>
+    <filename>/usr/share/backgrounds/Palmengarten.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#545475753030</pcolor>
+    <scolor>#545475753030</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Mi old, old Shoes</name>
+    <filename>/usr/share/backgrounds/Shoes.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#eeeeeeeeeeee</pcolor>
+    <scolor>#eeeeeeeeeeee</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>The Rainbow is Dead</name>
+    <filename>/usr/share/backgrounds/TheRainbowisDead.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#ffffffffffff</pcolor>
+    <scolor>#ffffffffffff</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Throwing Stones</name>
+    <filename>/usr/share/backgrounds/ThrowingStones.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#000000000000</pcolor>
+    <scolor>#000000000000</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Cosmos</name>
+    <filename>/usr/share/backgrounds/cosmos/background-1.xml</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#b0b068684040</pcolor>
+    <scolor>#b0b068684040</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Cherries.jpg</name>
+    <filename>/usr/share/backgrounds/Cherries.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#000000000000</pcolor>
+    <scolor>#000000000000</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Frog</name>
+    <filename>/usr/share/backgrounds/Frog.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#000000000000</pcolor>
+    <scolor>#000000000000</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Sand</name>
+    <filename>/usr/share/backgrounds/Sand.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#b6b68a8a5b5b</pcolor>
+    <scolor>#b6b68a8a5b5b</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>No Desktop Background</name>
+    <filename>(none)</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#b0b068684040</pcolor>
+    <scolor>#b0b068684040</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Ubuntu</name>
+    <filename>/usr/share/backgrounds/warty-final-ubuntu.png</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#b0b068684040</pcolor>
+    <scolor>#b0b068684040</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>White Orchid</name>
+    <filename>/usr/share/backgrounds/WhiteOrchid.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#ffffffffffff</pcolor>
+    <scolor>#ffffffffffff</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Grass in A.jpg</name>
+    <filename>/usr/share/backgrounds/GrassinA.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#3d3d9a9a0101</pcolor>
+    <scolor>#3d3d9a9a0101</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Primula Red</name>
+    <filename>/usr/share/backgrounds/PrimulaRed.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#e6e61e1e2b2b</pcolor>
+    <scolor>#e6e61e1e2b2b</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Sunset</name>
+    <filename>/usr/share/backgrounds/Sunset.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#000000000000</pcolor>
+    <scolor>#000000000000</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Radioactive Sunrise.jpg</name>
+    <filename>/usr/share/backgrounds/RadioactiveSunrise.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#8f8f33334242</pcolor>
+    <scolor>#8f8f33334242</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Flor de Loto</name>
+    <filename>/usr/share/backgrounds/FlordeLoto.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#000000000000</pcolor>
+    <scolor>#000000000000</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Bay</name>
+    <filename>/usr/share/backgrounds/Bay.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#000000000000</pcolor>
+    <scolor>#000000000000</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>O Life.jpg</name>
+    <filename>/usr/share/backgrounds/OLife.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#000000000000</pcolor>
+    <scolor>#000000000000</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Butterfly</name>
+    <filename>/usr/share/backgrounds/Butterfly.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#afafa6a6a1a1</pcolor>
+    <scolor>#afafa6a6a1a1</scolor>
+  </wallpaper>
+</wallpapers>
