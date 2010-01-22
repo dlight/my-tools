@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <gconf>
 	<entry name="auto_hide" mtime="1264191209" schema="/schemas/apps/panel/toplevels/auto_hide"/>
-	<entry name="y_bottom" mtime="1264191209" schema="/schemas/apps/panel/toplevels/y_bottom"/>
+	<entry name="y_bottom" mtime="1264192020" schema="/schemas/apps/panel/toplevels/y_bottom" type="int" value="0"/>
 	<entry name="orientation" mtime="1264191209" schema="/schemas/apps/panel/toplevels/orientation" type="string">
 		<stringvalue>right</stringvalue>
 	</entry>
@@ -19,7 +19,7 @@
 	<entry name="name" mtime="1264191209" schema="/schemas/apps/panel/toplevels/name"/>
 	<entry name="expand" mtime="1264191209" schema="/schemas/apps/panel/toplevels/expand"/>
 	<entry name="enable_animations" mtime="1264191209" schema="/schemas/apps/panel/toplevels/enable_animations"/>
-	<entry name="y_centered" mtime="1264191209" schema="/schemas/apps/panel/toplevels/y_centered"/>
+	<entry name="y_centered" mtime="1264192020" schema="/schemas/apps/panel/toplevels/y_centered" type="bool" value="true"/>
 	<entry name="enable_buttons" mtime="1264191494" schema="/schemas/apps/panel/toplevels/enable_buttons" type="bool" value="false"/>
 	<entry name="enable_arrows" mtime="1264191209" schema="/schemas/apps/panel/toplevels/enable_arrows" type="bool" value="true"/>
 </gconf>
