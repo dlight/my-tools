@@ -1,6 +1,8 @@
 #!/bin/bash
 
 cd ~/e/my-tools
+pwd
 rs-git "$@"
 cd ~/e/hydra-mud
+pwd
 rs-git "$@"
