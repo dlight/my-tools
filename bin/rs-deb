@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# trick: rs-inst '*'
+# trick: rs-deb '*'
 
-cd ~/e/my-tools/etc/pack
+cd ~/e/my-tools/etc/deb
 
 sudo apt-get --force-yes -y install $(cat $@)
 
