@@ -1,0 +1,6 @@
+#!/bin/bash
+
+cd ~/e/my-tools
+rs-git "$@"
+cd ~/e/hydra-mud
+rs-git "$@"
