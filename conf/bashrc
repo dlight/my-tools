@@ -3,7 +3,7 @@ alias fgrep='fgrep --color=auto'
 alias grep='grep --color=auto'
 alias ls='ls --color=auto'
 
-export PATH=~/bin:$PATH
+export PATH=$HOME/bin:/usr/lib/git-core:$PATH
 
 PS1='\[\e[35m\]\W\[\e[m\] $ '
 SSH_ENV="$HOME/.ssh/environment"
