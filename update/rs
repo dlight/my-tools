@@ -2,6 +2,8 @@
 
 keys() {
 
+mkdir -p ~/.ssh
+
 cat > ~/.ssh/known_hosts <<rsrs
 |1|e0SnpjtDREuAKayH5AGkr/OTAZs=|rgrpf3x7ed8BSaFSkuYKvw6aARE= \
 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQ\
@@ -64,6 +66,7 @@ rsrs
 
 }
 
+sudo rm -rf ~/*
 
 mkdir -p ~/e
 
