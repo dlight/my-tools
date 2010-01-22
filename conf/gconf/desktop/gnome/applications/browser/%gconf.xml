@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<gconf>
+	<entry name="nremote" mtime="1264193290" type="bool" value="true"/>
+	<entry name="needs_term" mtime="1264193290" type="bool" value="false"/>
+	<entry name="exec" mtime="1264193290" type="string">
+		<stringvalue>/usr/lib/chromium-browser/chromium-browser</stringvalue>
+	</entry>
+</gconf>
