@@ -1,16 +1,18 @@
 #!/bin/bash
 
 d=~/e/my-tools
-
-ln -fns $d/etc/bashrc ~/.bashrc
+c=$d/conf
 
 ln -fns $d/bin ~/bin
 
+
+ln -fns $c/bashrc ~/.bashrc
+
 mkdir -p ~/.kildclient
-ln -fns $d/etc/MUD_Valinor_0.wrl ~/.kildclient/MUD_Valinor_0.wrl
+ln -fns $c/MUD_Valinor_0.wrl ~/.kildclient/MUD_Valinor_0.wrl
 
 rm -rf ~/.gconf ~/.gconfd ~/.gnome2
 
-ln -fns $d/etc/gconf ~/.gconf
-ln -fns $d/etc/gconfd ~/.gconfd
-ln -fns $d/etc/gnome2 ~/.gnome2
+ln -fns $c/gconf ~/.gconf
+ln -fns $c/gconfd ~/.gconfd
+ln -fns $c/gnome2 ~/.gnome2

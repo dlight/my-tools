@@ -3,10 +3,10 @@
 	<entry name="nautilus-window-scroll-position" mtime="1264192008" type="string">
 		<stringvalue>file:///home/ubuntu/Desktop/ubiquity-gtkui.desktop</stringvalue>
 	</entry>
-	<entry name="nautilus-icon-view-layout-timestamp" mtime="1264191923" type="string">
-		<stringvalue>1264191923</stringvalue>
+	<entry name="nautilus-icon-view-layout-timestamp" mtime="1264192022" type="string">
+		<stringvalue>1264192022</stringvalue>
 	</entry>
-	<entry name="nautilus-icon-view-keep-aligned" mtime="1264191922" type="string">
+	<entry name="nautilus-icon-view-keep-aligned" mtime="1264192021" type="string">
 		<stringvalue>true</stringvalue>
 	</entry>
 </gconf>
