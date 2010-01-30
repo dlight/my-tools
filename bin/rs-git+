@@ -6,3 +6,6 @@ rs-git "$@"
 cd ~/e/hydra-mud
 pwd
 rs-git "$@"
+cd ~/e/blob
+pwd
+rs-git "$@"
