@@ -21,3 +21,6 @@ cp -rv $c/gnome2/* ~/.gnome2/
 #ln -fns $c/gconf ~/.gconf
 #ln -fns $c/gconfd ~/.gconfd
 #ln -fns $c/gnome2 ~/.gnome2
+
+rm -rf ~/.vba
+ln -fns ~/e/blob/vba ~/.vba
