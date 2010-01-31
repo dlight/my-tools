@@ -2,7 +2,7 @@
 
 # trick: rs-deb '*'
 
-cd ~/e/my-tools/etc/deb
+cd $RS_GIT_PATH/my-tools/etc/deb
 
 sudo apt-get --force-yes -y install $(cat $@)
 
