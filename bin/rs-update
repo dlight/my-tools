@@ -28,5 +28,5 @@ ln -fns $RS_GIT_PATH/blob/vba ~/.vba
 rm -rf ~/1
 ln -fns $RS_GIT_PATH/blob/1 ~/1
 
-rm -rf ~/e
-ln -fns ~/git/hydra-mud ~/e/hydra-mud
+#rm -rf ~/e
+#ln -fns $RS_GIT_PATH/hydra-mud ~/e/hydra-mud
