@@ -123,12 +123,16 @@ git config --global push.default current
 git config --global user.name 'Elias Gabriel Amaral da Silva'
 git config --global user.email 'tolkiendili@gmail.com'
 
+# duplicated..
+
+export RS_GIT_PATH=~/bin
+
 mkdir -p ~/git
 
-git clone git@github.com:dlight/my-tools.git ~/git/my-tools
+git clone git@github.com:dlight/my-tools.git $RS_GIT_PATH/my-tools
 
-~/git/my-tools/bin/rs-clone
+$RS_GIT_PATH/my-tools/bin/rs-clone
 
-~/git/my-tools/bin/rs-update
+$RS_GIT_PATH/my-tools/bin/rs-update
 
 sudo restart gdm
