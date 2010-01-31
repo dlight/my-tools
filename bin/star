@@ -1,0 +1,12 @@
+#!/bin/bash
+
+[[ -z "$1" ]] && { echo t1-star file; exit 0; }
+
+mytemp() {
+	((i=1));
+	while fn="star$i.html"; [[ -e "$fn" ]]; do
+		((i++))
+	done
+	mv "$1" "$fn"
+	echo "$fn"
+}
