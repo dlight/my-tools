@@ -136,3 +136,7 @@ $RS_GIT_PATH/my-tools/bin/rs-clone
 $RS_GIT_PATH/my-tools/bin/rs-update
 
 sudo restart gdm
+
+if [[ -n "$@" ]]; then
+	$RS_GIT_PATH/my-tools/bin/rs-deb "$@"
+fi
