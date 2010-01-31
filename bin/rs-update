@@ -24,3 +24,6 @@ cp -rv $c/gnome2/* ~/.gnome2/
 
 rm -rf ~/.vba
 ln -fns ~/e/blob/vba ~/.vba
+
+rm -rf ~/1
+ln -fns ~/e/blob/1 ~/1
