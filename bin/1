@@ -4,20 +4,20 @@
 # 1 http://galleries.pichunter.com/krawl/183/1833542/index.html
 
 showhelp() { cat<<end
-1 -h
-1 -v
-1 -d debug url
-1 url [template]
-1 -l [template]
+1 is a nerd tool.
+
+1 -h			help
+1 -v			version
+l -d debug url		debug
+1 -l [template]		read-eval-print loop
+1 url [template]	run once
 end
-exit 0
 }
 showversion() { cat<<end
-1 version 0.1 (meaningless version number)
-Sun Jan 31 02:59:44 UTC 2010
+1 version 1 (meaningless version number)
+Sun Jan 31 03:25:53 UTC 2010
 http://github.com/dlight/my-tools/raw/master/bin/1
 end
-exit 0
 }
 
 withdefault() {
@@ -32,16 +32,16 @@ case "$1" in
 		debug="$2"
 		url_once="$3";;
 	-l) mode="loop"
-		base="$(withdefault $1)";;
+		base="$(withdefault $2)";;
 	*) mode="once"
 		[[ -z "$1" ]] && showhelp;
 		url_once="$1"
-		base="$(withdefault $1)";;
+		base="$(withdefault $2)";;
 esac
 
 mytemp() {
 	((i=1));
-	while fn="$base.$i.html"; [[ -e "$fn" ]]; do
+	while fn="$base-$i.html"; [[ -e "$fn" ]]; do
 		((i++))
 	done
 	touch "$fn"
@@ -75,7 +75,7 @@ header() {
 	comment "on $(date)"
 	echo
 
-	comment $'version:\n\n'"$(showversion)"$'\n'
+	comment $'version:\n\n'"$(showversion)"$'\n\n'
 	echo
 
 	comment $'raw:\n\n'"$(echo "$data" | \
@@ -97,7 +97,7 @@ doit() {
 	header "$url" "$data" >> "$filename"
 	echo "$pagelinks" >> "$filename"
 
-	echo "$name" "($(echo "$pagelinks" | wc -l))"
+	echo "$filename" "($(echo "$pagelinks" | wc -l))"
 }
 
 debug() {
@@ -111,8 +111,11 @@ debug() {
 }
 
 loop() {
-	while read i; do
-		doit "$i"
+	showversion
+	echo
+
+	while read -e -p '> ' l; history -s "$l"; do
+		for i in $l; do doit "$i"; done
 	done
 }
 
