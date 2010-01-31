@@ -115,7 +115,9 @@ loop() {
 	echo
 
 	while read -e -p '> ' l; history -s "$l"; do
-		for i in $l; do doit "$i"; done
+		for i in $l; do
+			doit "$i" &
+		done
 	done
 }
 

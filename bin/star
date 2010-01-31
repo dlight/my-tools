@@ -3,7 +3,7 @@
 [[ -z "$1" ]] && { echo t1-star file; exit 0; }
 
 ((i=1));
-while fn="star$i.html"; [[ -e "$fn" ]]; do
+while fn="star$(printf "%02d\n" $i).html"; [[ -e "$fn" ]]; do
 	((i++))
 done
 
