@@ -1,11 +1,14 @@
 #!/bin/bash
 
-cd ~/e/my-tools
-pwd
-rs-git "$@"
-cd ~/e/hydra-mud
-pwd
-rs-git "$@"
-cd ~/e/blob
-pwd
-rs-git "$@"
+check() {
+if [[ -d "$RS_GIT_PATH/$1" ]]; then
+	cd "$RS_GIT_PATH/$1"
+	pwd
+	rs-git "$@"
+fi
+}
+
+check my-tools
+check blob
+check hydra-mud
+

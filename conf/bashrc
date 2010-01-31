@@ -5,6 +5,8 @@ alias ls='ls --color=auto'
 
 export PATH=$HOME/bin:/usr/lib/git-core:$PATH
 
+export RS_GIT_PATH=~/git
+
 PS1='\[\e[35m\]\W\[\e[m\] $ '
 SSH_ENV="$HOME/.ssh/environment"
 

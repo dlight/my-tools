@@ -1,5 +1,5 @@
 #!/bin/bash
 
-cd ~/e/my-tools
+cd $RS_GIT_PATH/my-tools
 
 make
