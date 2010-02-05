@@ -1,3 +1,3 @@
-vba -4 --filter-bilinear ~/*.zip
+vba -F --filter-bilinear ~/*.zip
 
  #~/Final_FantasyTacticsAdvance_U_.gba
